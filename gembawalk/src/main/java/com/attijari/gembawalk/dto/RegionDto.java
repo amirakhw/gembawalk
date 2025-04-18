@@ -1,2 +1,4 @@
-package com.attijari.gembawalk.dto;public class RegionDto {
+package com.attijari.gembawalk.dto;
+
+public class RegionDto {
 }

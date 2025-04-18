@@ -43,23 +43,29 @@ public class AuthService {
         return new LoginResponse(token);
     }
 
-    /**
-     * Inscrit un nouvel utilisateur avec le rôle par défaut (DASHBOARD_VIEWER)
-     */
-    public User register(String email, String password) {
+    public User register(String email, String password, String roleName) {
         if(userRepository.findByEmail(email).isPresent()){
             throw new RuntimeException("User already exists");
         }
 
-        // Récupération du rôle par défaut
-        Role defaultRole = roleRepository.findByName("DASHBOARD_VIEWER")
-                .orElseThrow(() -> new RuntimeException("Default role not found"));
+        Role role;
+        if (roleName != null && !roleName.isEmpty()) {
+            role = roleRepository.findByName(roleName)
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+        } else {
+            role = roleRepository.findByName("DASHBOARD_VIEWER")
+                    .orElseThrow(() -> new RuntimeException("Default role not found: DASHBOARD_VIEWER"));
+        }
 
         User user = new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRole(defaultRole);
+        user.setRole(role);
 
         return userRepository.save(user);
+    }
+
+    public User register(String email, String password) {
+        return register(email, password, null);
     }
 }
