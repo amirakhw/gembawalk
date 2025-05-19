@@ -1,0 +1,25 @@
+@startuml HighLevelChecklistSubmission
+actor "Visiteur" as V
+participant "Application Flutter" as App
+participant "Serveur Backend" as BE
+participant "Base de Données" as DB
+
+' 1. Interaction utilisateur
+V -> App : Appuie sur "Soumettre la visite"
+
+' 2. Envoi des données
+App -> BE : Envoie des données de visite (checklist + questions)
+
+' 3. Traitement côté serveur
+BE -> DB : Enregistre la visite
+DB --> BE : ID de la visite
+
+' 4. Enregistrement des réponses
+BE -> DB : Enregistre les réponses checklist & questions
+
+' 5. Confirmation
+BE --> App : Succès de la soumission
+
+' 6. Retour à l'accueil
+App -> V : Redirection vers l’écran d’accueil
+@enduml

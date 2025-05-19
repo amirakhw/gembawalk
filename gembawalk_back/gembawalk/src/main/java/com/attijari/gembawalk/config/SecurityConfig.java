@@ -4,6 +4,7 @@ import com.attijari.gembawalk.security.JwtAuthFilter;
 import com.attijari.gembawalk.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -35,6 +36,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/regions/**").permitAll() // Allow regions endpoints
                         .requestMatchers("/api/groups/**").permitAll()  // Allow groups endpoints
                         .requestMatchers("/api/agencies/**").permitAll() // Allow agencies endpoints
+                        .requestMatchers("/api/forms/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/forms/**").permitAll()
+
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated() // Other requests require auth
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // JWT filter

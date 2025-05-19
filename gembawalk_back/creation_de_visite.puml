@@ -1,0 +1,38 @@
+@startuml CreateVisit
+actor "Visiteur" as V
+participant "Frontend Flutter" as FE
+participant "VisitController" as VC
+participant "VisitService" as VS
+participant "VisitRepository" as VR
+participant "Database" as DB
+
+' 1. L'utilisateur déclenche la création d'une visite depuis Flutter
+V -> FE : tap "Nouvelle Visite"
+FE -> VC : POST /visits { userId, formId, agenceId, date }
+activate VC
+
+' 2. Le contrôleur délègue au service de visite
+VC -> VS : createVisit(userId, formId, agenceId, date)
+activate VS
+
+' 3. Le service construit l’entité Visit et sauvegarde
+VS -> VR : save(new Visit(...))
+activate VR
+VR -> DB : INSERT INTO visit (...)
+activate DB
+DB --> VR : visit id généré
+deactivate DB
+VR --> VS : Visit entity (avec id)
+deactivate VR
+
+' 4. Le service retourne la visite créée au contrôleur
+VS --> VC : VisitDto
+deactivate VS
+
+' 5. Le contrôleur répond à l’UI
+VC --> FE : {"id": ..., "createdAt": ..., ...}
+deactivate VC
+
+' 6. L’UI affiche la confirmation
+FE --> V : Affiche le menu des rubriques
+@enduml

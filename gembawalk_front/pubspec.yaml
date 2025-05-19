@@ -16,6 +16,9 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   jwt_decoder: ^2.0.1
   image_picker: ^1.1.2
+  google_fonts: ^6.2.1
+  flutter_dotenv: ^5.2.1
+  provider: ^6.1.5
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +30,4 @@ flutter:
 
   assets:
     - assets/images/attijariLogo.png
+    - .env

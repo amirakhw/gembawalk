@@ -1,0 +1,135 @@
+@startuml
+' =====================================
+' Diagramme de classes UML pour Gemba Walk
+' =====================================
+
+skinparam class {
+    BackgroundColor AntiqueWhite
+    ArrowColor DarkSlateGray
+    BorderColor DimGray
+}
+
+' ---------- Enums (moved to the left) ----------
+enum RubriqueType {
+    CHECKLIST
+    QUESTIONS
+}
+
+enum ResponseStatus {
+    CONFORM
+    NON_CONFORM
+}
+
+' ---------- Entités géographiques ----------
+class Region {
+    + id : Long
+    + name : String
+}
+
+class Group {
+    + id : Long
+    + name : String
+    + regionId : Long
+}
+
+class Agency {
+    + id : Long
+    + name : String
+    + groupId : Long
+}
+
+Region "1" -- "0..*" Group : contient >
+Group "1" -- "0..*" Agency : contient >
+
+' ---------- Gestion des utilisateurs ----------
+class Role {
+    + id : Long
+    + name : String
+}
+
+class User {
+    + id : Long
+    + email : String
+    + password : String
+    + roleId : Long
+}
+
+Role "1" -- "0..*" User : attribue >
+
+
+' ---------- Formulaires et rubriques ----------
+class Form {
+    + id : Long
+    + createdAt : DateTime
+    + description : String
+    + name : String
+}
+
+class Rubrique {
+    + id : Long
+    + name : String
+    + rubriqueOrder : Integer
+    + type : RubriqueType
+    + formId : Long
+}
+
+Form "1" -- "0..*" Rubrique : regroupe >
+Rubrique "1" -- "0..*" ChecklistItem : liste >
+Rubrique "1" -- "0..*" Question : liste >
+
+class ChecklistItem {
+    + id : Long
+    + name : String
+    + order : Integer
+    + rubriqueId : Long
+}
+
+class Question {
+    + id : Long
+    + questionText : String
+    + questionOrder : Integer
+    + rubriqueId : Long
+}
+
+' ---------- Visites et réponses ----------
+class Visit {
+    + id : Long
+    + createdAt : DateTime
+    + date : Date
+    + agenceId : Long
+    + formId : Long
+    + userId : Long
+}
+
+class ChecklistResponse {
+    + id : Long
+    + comment : String
+    + createdAt : DateTime
+    + photoUrl : String
+    + status : ResponseStatus
+    + ticketNumber : String
+    + itemId : Long
+    + rubriqueId : Long
+    + visitId : Long
+}
+
+class QuestionResponse {
+    + id : Long
+    + createdAt : DateTime
+    + responseText : String
+    + questionId : Long
+    + rubriqueId : Long
+    + visitId : Long
+}
+
+Agency "1" -- "0..*" Visit : héberge >
+Form "1" -- "0..*" Visit : utilisé pour >
+User "1" -- "0..*" Visit : effectue >
+Visit "1" -- "0..*" ChecklistResponse : contient >
+Visit "1" -- "0..*" QuestionResponse : contient >
+
+ChecklistItem "1" -- "0..*" ChecklistResponse : génère >
+Rubrique "1" -- "0..*" ChecklistResponse : contexte >
+Question "1" -- "0..*" QuestionResponse : génère >
+Rubrique "1" -- "0..*" QuestionResponse : contexte >
+@enduml

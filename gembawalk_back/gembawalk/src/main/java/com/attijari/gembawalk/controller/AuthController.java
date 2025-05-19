@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.OPTIONS}, allowedHeaders = {"Content-Type", "Authorization"})
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
+//remove the autowired , inject with constructor pour faciliter les tests unitaires
     @Autowired
     private AuthService authService;
+
 
     /**
      * Endpoint pour se connecter. Retourne un token JWT.
@@ -22,7 +25,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
         LoginResponse response = authService.login(loginRequest);
         return ResponseEntity.ok(response);
-    }
+    } 
 
     /**
      * Endpoint pour l'inscription (pour tests). Permet de spécifier le rôle dans le LoginRequest.

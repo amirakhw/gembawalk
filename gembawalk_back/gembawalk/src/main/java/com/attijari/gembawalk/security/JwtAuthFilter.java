@@ -33,6 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         String token = null;
         String username = null;
+        String path = request.getRequestURI();
+
+        if (path.startsWith("/api/forms/") || path.equals("/error")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (header != null && header.startsWith("Bearer ")) {
             token = header.substring(7);
