@@ -34,6 +34,11 @@ public class VisitQueryService {
     }
 
     @Transactional(readOnly = true)
+    public List<Visit> getActiveVisits() {
+        return visitRepository.findByActive(true);
+    }
+
+    @Transactional(readOnly = true)
     public List<Visit> getAllVisits() {
         return visitRepository.findAll();
     }

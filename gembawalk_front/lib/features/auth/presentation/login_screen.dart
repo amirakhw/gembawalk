@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import '../../home/technician_home_screen.dart';
 import '../../home/visitor_home_screen.dart';
 import 'package:gembawalk_front/config/theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,12 +26,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final String password = _passwordController.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      _showSnackBar('Veuillez saisir votre nom d\'utilisateur et votre mot de passe.');
+      _showSnackBar(
+        'Veuillez saisir votre nom d\'utilisateur et votre mot de passe.',
+      );
       return;
     }
 
-
-    final Uri uri = Uri.parse('http://'+ dotenv.get('LOCALIP') +':8080/api/auth/login');
+    final Uri uri = Uri.parse(
+      'http://' + dotenv.get('LOCALIP') + ':8080/api/auth/login',
+    );
     //final Uri uri = Uri.parse('http://192.168.1.25:8080/api/auth/login');
     //print("***********************************************$uri");
 
@@ -47,7 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
         }),
       );
 
-      print("**********************waiting LOGIN from  $uri   ******************************");
+      print(
+        "**********************waiting LOGIN from  $uri   ******************************",
+      );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -60,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (role == 'ROLE_VISITOR') {
           nextPage = const VisitorHomeScreen();
         } else if (role == 'ROLE_TECHNICIAN') {
-          nextPage = const Text('Technician Screen Placeholder');
+          nextPage = const TechnicianHomeScreen();
         } else if (role == 'ROLE_DASHBOARD_VIEWER') {
           nextPage = const Text('Dashboard Viewer Screen Placeholder');
         } else {
@@ -91,10 +96,11 @@ class _LoginScreenState extends State<LoginScreen> {
       print(error);
     }
   }
+
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -138,7 +144,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        _isObscure
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                       ),
                       onPressed: () {
                         setState(() {

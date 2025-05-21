@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:gembawalk_front/core/models/agence.dart';
 import 'package:gembawalk_front/core/models/form.dart';
 import 'package:gembawalk_front/core/models/rubrique.dart';
+import 'package:gembawalk_front/core/service/agence_api_service.dart';
 import 'package:gembawalk_front/core/service/form_api_service.dart';
+import 'package:http/http.dart' as http;
 
 import '../core/models/visit.dart';
 
@@ -10,6 +15,8 @@ class LocalDB extends ChangeNotifier {
   //  liste de visit<rubriques<rubrique_id , checklist_item>>
   final List<Visit> _allData = [];
   late Future<FormModel> _form;
+  late List<Future<AgenceModel> _agences;
+  late String _agence_name;
 
   List<Visit> get localDB => _allData;
 
@@ -17,7 +24,22 @@ class LocalDB extends ChangeNotifier {
     _form = FormApiService(
       baseUrl: 'http://' + dotenv.get('LOCALIP') + ':8080/api',
     ).fetchForm(1);
+    _agences = AgenceApiService(baseUrl: 'http://' + dotenv.get('LOCALIP') + ':8080/api').fetchAgence();
   }
+
+  /* Future<void> _fetchAgencies() async {
+    final response = await http.get(
+      Uri.parse('http://' + dotenv.get('LOCALIP') + ':8080/api/agencies/all'),
+    );
+    if (response.statusCode == 200) {
+      print(
+        "*****************json agency **************************** \n $_agences",
+      );
+      _agences = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      print('Erreur lors du chargement des agences.');
+    }
+  } */
 
   Future<void> add(data, agenceId) async {
     print(
@@ -25,6 +47,7 @@ class LocalDB extends ChangeNotifier {
     );
     List<Rubrique>? _reponse;
     FormModel formModel = await _form;
+    List<
 
     _reponse = formModel.copyRubriqueList();
 
@@ -36,9 +59,17 @@ class LocalDB extends ChangeNotifier {
       }
     }
 
+    for (var ag in agList) {
+      print("************************ $ag ************************");
+      if (ag["id"] == agenceId) {
+        _agence_name = ag["name"];
+      }
+    }
+
     Visit visit = Visit(
       id: _allData.length,
       agence_id: agenceId,
+      agence_name: _agence_name,
       created_at: DateTime.now(),
       rubriques: _reponse,
     );

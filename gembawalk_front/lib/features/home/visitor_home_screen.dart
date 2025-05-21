@@ -130,14 +130,42 @@ class VisitorHomeScreen extends StatelessWidget {
                           );
                         },
                       ),
+
                       //----------------LOG OUT BUTTON
-                      ElevatedButton(
+                      /*                     ElevatedButton(
                         onPressed: () {
                           Navigator.of(
                             context,
                           ).pushNamedAndRemoveUntil('/', (route) => false);
                         },
                         child: const Text('LOG OUT'),
+                      ), */
+                      Padding(
+                        padding: const EdgeInsets.only(top: 32.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(
+                                context,
+                              ).pushNamedAndRemoveUntil('/', (route) => false);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFF8F0E3),
+                              foregroundColor: Colors.black87,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12.0,
+                                horizontal: 24.0,
+                              ),
+                              textStyle: const TextStyle(fontSize: 16.0),
+                              fixedSize: const Size(200, 40),
+                            ),
+                            child: const Text('LOG OUT'),
+                          ),
+                        ),
                       ),
                     ],
                   );

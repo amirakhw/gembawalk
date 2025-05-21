@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Visit {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
@@ -17,14 +17,24 @@ public class Visit {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user; // Assuming you have a User entity
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "agence_id")
-    private Agency agence; // Assuming you have an Agence entity
+    private Agency agence;
 
     private LocalDate date;
     private LocalDateTime createdAt;
+    private boolean active = true;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
 
     public Long getId() {
         return id;

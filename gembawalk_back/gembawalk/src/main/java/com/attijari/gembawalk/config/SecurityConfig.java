@@ -38,6 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/agencies/**").permitAll() // Allow agencies endpoints
                         .requestMatchers("/api/forms/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/forms/**").permitAll()
+                        .requestMatchers("/api/visits/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/visits").permitAll()
 
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated() // Other requests require auth

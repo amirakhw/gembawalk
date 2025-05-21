@@ -10,6 +10,6 @@ import java.util.List;
 public interface VisitRepository extends JpaRepository<Visit, Long> {
     List<Visit> findByUserId(Long userId);
     List<Visit> findByAgence_Id(Long agencyId);
-
+    List<Visit> findByActive(boolean isActive);
 
 }

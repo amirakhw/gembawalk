@@ -1,5 +1,6 @@
 package com.attijari.gembawalk.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class Form {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "form", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Rubrique> rubriques;
 
     public Long getId() {

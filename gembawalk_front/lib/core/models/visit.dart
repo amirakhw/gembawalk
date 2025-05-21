@@ -3,6 +3,7 @@ import 'rubrique.dart';
 class Visit {
   final int id;
   final int agence_id;
+  final String agence_name;
   //final String email;
   final DateTime? created_at;
   final List<Rubrique> rubriques;
@@ -10,6 +11,7 @@ class Visit {
   Visit({
     required this.id,
     required this.agence_id,
+    required this.agence_name,
     //required this.email,
     required this.created_at,
     this.rubriques = const [],

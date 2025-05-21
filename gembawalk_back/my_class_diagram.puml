@@ -74,8 +74,8 @@ class Rubrique {
 }
 
 Form "1" -- "0..*" Rubrique : regroupe >
-Rubrique "1" -- "0..*" ChecklistItem : liste >
-Rubrique "1" -- "0..*" Question : liste >
+Rubrique "1" -- "0..*" ChecklistItem : contient >
+Rubrique "1" -- "0..*" Question : contient >
 
 class ChecklistItem {
     + id : Long
@@ -129,7 +129,6 @@ Visit "1" -- "0..*" ChecklistResponse : contient >
 Visit "1" -- "0..*" QuestionResponse : contient >
 
 ChecklistItem "1" -- "0..*" ChecklistResponse : génère >
-Rubrique "1" -- "0..*" ChecklistResponse : contexte >
 Question "1" -- "0..*" QuestionResponse : génère >
-Rubrique "1" -- "0..*" QuestionResponse : contexte >
+
 @enduml
