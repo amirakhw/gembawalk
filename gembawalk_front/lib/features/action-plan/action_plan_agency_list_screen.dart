@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:gembawalk_front/core/models/planAction.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../../NotifierProviders/all_data.dart';
 import '../../core/models/visit.dart';
@@ -15,13 +20,44 @@ class ActionPlanAgencyListScreen extends StatefulWidget {
 
 class _ActionPlanAgencyListScreenState
     extends State<ActionPlanAgencyListScreen> {
-  late List<Visit> visitList;
-  List<String> agencies = [];
+  late List<PlanActionModel> planactionList;
+  List<String> agenciesFullName = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAgencies();
+  }
+
+  Future<void> _fetchAgencies() async {
+    final response = await http.get(
+      Uri.parse('http://${dotenv.get('LOCALIP')}:8080/api/visits/query/active'),
+    );
+    if (response.statusCode == 200) {
+      List<Map<String, dynamic>> _rep = List<Map<String, dynamic>>.from(
+        jsonDecode(response.body),
+      );
+      setState(() {
+        planactionList =
+            (_rep as List).map((el) => PlanActionModel.fromJson(el)).toList();
+
+        print('Regions: $agenciesFullName');
+      });
+    } else {
+      _showErrorSnackBar('Erreur lors du chargement des agences.');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
-    visitList = Provider.of<LocalDB>(context, listen: false).localDB;
-    agencies = visitList.map((visit) => visit.agence_name).toList();
+    //visitList = Provider.of<LocalDB>(context, listen: false).localDB;
+    //agencies = visitList.map((visit) => visit.agence_name).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -36,9 +72,9 @@ class _ActionPlanAgencyListScreenState
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: ListView.builder(
-            itemCount: agencies.length,
+            itemCount: planactionList.length,
             itemBuilder: (context, index) {
-              final agencyName = agencies[index];
+              final agencyName = planactionList[index].agence_name;
               return Card(
                 margin: const EdgeInsets.symmetric(
                   horizontal: 16.0,
@@ -60,9 +96,8 @@ class _ActionPlanAgencyListScreenState
                       context,
                       MaterialPageRoute(
                         builder:
-                            (context) => const PlanDActionScreen(
-                              agencyId: 'PLACEHOLDER_ID',
-                            ),
+                            (context) =>
+                                PlanDActionScreen(visit: planactionList[index]),
                       ),
                     );
                     print('Tapped on $agencyName');

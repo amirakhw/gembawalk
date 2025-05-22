@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:gembawalk_front/config/theme.dart';
 import 'package:gembawalk_front/config/colors.dart';
+import 'package:gembawalk_front/core/models/checklist_item_reponse.dart';
+import 'package:gembawalk_front/core/models/planAction.dart';
+import 'package:gembawalk_front/core/service/planAction_api_service.dart';
 
 class PlanDActionScreen extends StatefulWidget {
-  final String agencyId;
+  final PlanActionModel visit;
 
-  const PlanDActionScreen({super.key, required this.agencyId});
+  const PlanDActionScreen({super.key, required this.visit});
 
   @override
   State<PlanDActionScreen> createState() => _PlanDActionScreenState();
 }
 
 class _PlanDActionScreenState extends State<PlanDActionScreen> {
-  // Placeholder data for the action plan items
-  final List<Map<String, dynamic>> _actionItems = [
-    {'rubrique': 'Mobilier', 'item': 'Table', 'ticket': 'T12345', 'etat': 'en cours', 'confirme': true},
-    {'rubrique': 'Mobilier', 'item': 'Chaise', 'ticket': 'T12346', 'etat': 'terminé', 'confirme': true},
-    {'rubrique': 'Portes et Fenêtres', 'item': 'La porte', 'ticket': 'T12347', 'etat': 'en cours', 'confirme': false},
-    {'rubrique': 'Équipement IT', 'item': 'Écran', 'ticket': 'T12348', 'etat': 'en cours', 'confirme': false},
-    {'rubrique': 'Clavier', 'item': 'Clavier', 'ticket': 'T12349', 'etat': 'terminé', 'confirme': true},
-  ];
+  late final PlanactionApiService planactionApiService;
+  late Future<List<ChecklistItemReponseModel>> actionItems;
+
+  @override
+  void initState() {
+    super.initState();
+    planactionApiService = PlanactionApiService();
+    actionItems = planactionApiService
+        .fetchChecklistRepoonse(widget.visit.id)
+        .then(
+          (list) => list.where((item) => item.status == 'NON_CONFORM').toList(),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +35,11 @@ class _PlanDActionScreenState extends State<PlanDActionScreen> {
       appBar: AppBar(
         backgroundColor: attijariPrimary,
         title: Text(
-          'Plan d\'Action - Agence ${widget.agencyId}',
-          style: const TextStyle(color: attijariWhite, fontWeight: FontWeight.bold),
+          'Plan d\'Action - Agence ${widget.visit.id}',
+          style: const TextStyle(
+            color: attijariWhite,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         iconTheme: const IconThemeData(color: attijariWhite),
       ),
@@ -40,62 +51,134 @@ class _PlanDActionScreenState extends State<PlanDActionScreen> {
             // Table Header
             Row(
               children: const [
-                Expanded(flex: 2, child: Text('Item', style: TextStyle(fontWeight: FontWeight.bold, color: attijariTextPrimary))),
-                Expanded(child: Text('Numéro de ticket', style: TextStyle(fontWeight: FontWeight.bold, color: attijariTextPrimary))),
-                Expanded(child: Center(child: Text('État', style: TextStyle(fontWeight: FontWeight.bold, color: attijariTextPrimary)))),
-                Expanded(child: Center(child: Text('Confirmé par visiteur', style: TextStyle(fontWeight: FontWeight.bold, color: attijariTextPrimary)))),
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'Item',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: attijariTextPrimary,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Numéro de ticket',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: attijariTextPrimary,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'État',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: attijariTextPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'Confirmé par visiteur',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: attijariTextPrimary,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             const Divider(),
             // Table Rows
-            Expanded(
-              child: ListView.builder(
-                itemCount: _actionItems.length,
-                itemBuilder: (context, index) {
-                  final item = _actionItems[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(flex: 2, child: Text(item['item'])),
-                        Expanded(child: Text(item['ticket'])),
-                        Expanded(
-                          child: Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                              decoration: BoxDecoration(
-                                color: item['etat'] == 'en cours' ? Colors.orange[200] : Colors.green[200],
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
+            FutureBuilder<List<ChecklistItemReponseModel>>(
+              future: actionItems, // Replace with your actual async method
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('No action items available.'),
+                  );
+                }
+
+                final _actionItems = snapshot.data!;
+
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: _actionItems.length,
+                    itemBuilder: (context, index) {
+                      final item = _actionItems[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
                               child: Text(
-                                item['etat'],
-                                style: TextStyle(
-                                  color: item['etat'] == 'en cours' ? Colors.orange[800] : Colors.green[800],
-                                  fontWeight: FontWeight.bold,
+                                "${item.rubrique_name} . ${item.item_name}",
+                              ),
+                            ),
+                            Expanded(child: Text(item.ticket_number ?? "")),
+                            Expanded(
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                    vertical: 4.0,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        item.status == 'NON_CONFORM'
+                                            ? Colors.orange[200]
+                                            : Colors.green[200],
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  child: Text(
+                                    item.status == "CONFORM"
+                                        ? "Terminé"
+                                        : "en cours",
+                                    style: TextStyle(
+                                      color:
+                                          item.status == 'NON_CONFORM'
+                                              ? Colors.orange[800]
+                                              : Colors.green[800],
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Checkbox(
-                              value: item['confirme'],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _actionItems[index]['confirme'] = value ?? false;
-                                });
-                              },
-                              activeColor: AppColors.attijariSuccess,
-
+                            Expanded(
+                              child: Center(
+                                child: Checkbox(
+                                  value: item.status == "CONFORM",
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      _actionItems[index].status =
+                                          value == true
+                                              ? "CONFORM"
+                                              : "NON_CONFORM";
+                                    });
+                                  },
+                                  activeColor: AppColors.attijariSuccess,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20.0),
             Align(
@@ -107,13 +190,19 @@ class _PlanDActionScreenState extends State<PlanDActionScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.attijariError,
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 16.0,
+                  ),
                   textStyle: const TextStyle(fontSize: 16.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                child: const Text('Plan d\'action terminé', style: TextStyle(color: attijariWhite)),
+                child: const Text(
+                  'Plan d\'action terminé',
+                  style: TextStyle(color: attijariWhite),
+                ),
               ),
             ),
           ],

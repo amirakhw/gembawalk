@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/forms/**").permitAll()
                         .requestMatchers("/api/visits/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/visits").permitAll()
+                        .requestMatchers("/api/**").permitAll()
 
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated() // Other requests require auth

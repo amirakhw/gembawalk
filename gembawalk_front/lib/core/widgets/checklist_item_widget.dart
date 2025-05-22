@@ -40,7 +40,7 @@ class ChecklistItemWidget extends StatelessWidget {
         Row(
           children: [
             Radio<String>(
-              value: 'conforme',
+              value: 'CONFORM',
               groupValue: conformity,
               onChanged: (value) {
                 onConformityChanged(value);
@@ -49,7 +49,7 @@ class ChecklistItemWidget extends StatelessWidget {
 
             const Text('Conforme'),
             Radio<String>(
-              value: 'non conforme',
+              value: 'NON_CONFORM',
               groupValue: conformity,
               onChanged: onConformityChanged,
             ),
@@ -60,7 +60,7 @@ class ChecklistItemWidget extends StatelessWidget {
             ),
           ],
         ),
-        if (conformity == 'non conforme')
+        if (conformity == 'NON_CONFORM')
           TextField(
             controller: ticketController,
             decoration: const InputDecoration(labelText: 'Numéro de Ticket'),

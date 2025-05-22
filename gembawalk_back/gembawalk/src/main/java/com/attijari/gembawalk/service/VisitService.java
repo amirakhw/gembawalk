@@ -8,10 +8,7 @@ import com.attijari.gembawalk.entity.*;
 import com.attijari.gembawalk.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,10 +71,8 @@ public class VisitService {
             response.setRubrique(rubriqueRepository.findById(cr.getRubriqueId()).orElseThrow());
             response.setItem(checklistItemRepository.findById(cr.getItemId()).orElseThrow());
             response.setStatus(ChecklistResponse.Status.fromString(cr.getStatus()));
-
             response.setTicketNumber(cr.getTicketNumber());
             response.setComment(cr.getComment());
-            response.setPhotoUrl(cr.getPhotoUrl());
             return response;
         }).collect(Collectors.toList());
 

@@ -1,30 +1,30 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:gembawalk_front/core/models/agence.dart';
+
 import 'package:gembawalk_front/core/models/form.dart';
 import 'package:gembawalk_front/core/models/rubrique.dart';
-import 'package:gembawalk_front/core/service/agence_api_service.dart';
+
 import 'package:gembawalk_front/core/service/form_api_service.dart';
-import 'package:http/http.dart' as http;
+import 'package:gembawalk_front/core/service/planAction_api_service.dart';
 
 import '../core/models/visit.dart';
 
 class LocalDB extends ChangeNotifier {
+  FormApiService formApiService = FormApiService(
+    baseUrl: 'http://${dotenv.get('LOCALIP')}:8080/api',
+  );
+  PlanactionApiService planactionApiService = PlanactionApiService();
   //  liste de visit<rubriques<rubrique_id , checklist_item>>
   final List<Visit> _allData = [];
   late Future<FormModel> _form;
-  late List<Future<AgenceModel> _agences;
-  late String _agence_name;
+  //late List<Future<AgenceModel>> _agences;
+  //late String _agence_name;
 
   List<Visit> get localDB => _allData;
 
   LocalDB() {
-    _form = FormApiService(
-      baseUrl: 'http://' + dotenv.get('LOCALIP') + ':8080/api',
-    ).fetchForm(1);
-    _agences = AgenceApiService(baseUrl: 'http://' + dotenv.get('LOCALIP') + ':8080/api').fetchAgence();
+    _form = formApiService.fetchForm(1);
+    //_agences = AgenceApiService(baseUrl: 'http://' + dotenv.get('LOCALIP') + ':8080/api').fetchAgence();
   }
 
   /* Future<void> _fetchAgencies() async {
@@ -47,7 +47,6 @@ class LocalDB extends ChangeNotifier {
     );
     List<Rubrique>? _reponse;
     FormModel formModel = await _form;
-    List<
 
     _reponse = formModel.copyRubriqueList();
 
@@ -59,20 +58,22 @@ class LocalDB extends ChangeNotifier {
       }
     }
 
-    for (var ag in agList) {
+    /* for (var ag in agList) {
       print("************************ $ag ************************");
       if (ag["id"] == agenceId) {
         _agence_name = ag["name"];
       }
-    }
+    } */
 
     Visit visit = Visit(
       id: _allData.length,
       agence_id: agenceId,
-      agence_name: _agence_name,
+      //agence_name: _agence_name,
       created_at: DateTime.now(),
       rubriques: _reponse,
     );
+
+    planactionApiService.postVisit(visit);
 
     _allData.add(visit);
 
