@@ -5,18 +5,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gembawalk_front/config/colors.dart';
 import 'package:gembawalk_front/core/models/planAction.dart';
 import 'package:http/http.dart' as http;
-import 'tech_plan_daction_screen.dart';
+import 'package:provider/provider.dart';
+import '../../NotifierProviders/all_data.dart';
+import '../../core/models/visit.dart';
+import 'visitor_plan_daction_screen.dart';
 import 'package:gembawalk_front/config/theme.dart';
 
-class TechnicianHomeScreen extends StatefulWidget {
-  const TechnicianHomeScreen({super.key});
+class ActionPlanAgencyListScreen extends StatefulWidget {
+  const ActionPlanAgencyListScreen({super.key});
 
   @override
-  State<TechnicianHomeScreen> createState() => _TechnicianHomeScreenState();
+  State<ActionPlanAgencyListScreen> createState() =>
+      _ActionPlanAgencyListScreenState();
 }
 
-class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
-  List<PlanActionModel> planactionList = [];
+class _ActionPlanAgencyListScreenState
+    extends State<ActionPlanAgencyListScreen> {
+  late List<PlanActionModel> planactionList;
   List<String> agenciesFullName = [];
 
   @override
@@ -104,15 +109,25 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                       size: 18,
                     ),
                     onTap: () {
-                      Navigator.push(
+                      Navigator.push<int>(
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) => TechPlanDActionScreen(
+                              (context) => PlanDActionScreen(
                                 visit: planactionList[index],
                               ),
                         ),
+                      ).then(
+                        (id) => setState(() {
+                          print('Returned id: $id');
+                          if (id != null) {
+                            setState(() {
+                              planactionList.removeWhere((v) => (v.id == id));
+                            });
+                          }
+                        }),
                       );
+
                       print('Tapped on $agencyName');
                     },
                   ),

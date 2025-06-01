@@ -34,7 +34,6 @@ class ChecklistItem {
       id: id,
       name: name,
       order: order,
-      // Reinstantiate the DateTime to avoid shared references
       created_at:
           created_at == null
               ? null

@@ -11,5 +11,10 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     List<Visit> findByUserId(Long userId);
     List<Visit> findByAgence_Id(Long agencyId);
     List<Visit> findByActive(boolean isActive);
+    //void setActive(boolean isActive);
+    long count();
+    long countByActiveTrue();
+    long countByActiveFalse();
+    List<Visit> findTop3ByOrderByCreatedAtDesc();
 
 }

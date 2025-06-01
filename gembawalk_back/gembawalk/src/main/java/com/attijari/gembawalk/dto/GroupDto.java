@@ -3,7 +3,7 @@ package com.attijari.gembawalk.dto;
 public class GroupDto {
     private Long id;
     private String name;
-    private Long regionId; // To send the associated region's ID
+    private Long regionId;
 
     public GroupDto() {
     }

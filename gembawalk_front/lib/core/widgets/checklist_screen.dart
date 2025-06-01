@@ -1,15 +1,12 @@
-// lib/core/widgets/checklist_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/rubrique.dart';
-import '../models/checklist_item.dart'; // Import ChecklistItem model
+import '../models/checklist_item.dart';
 import 'checklist_item_widget.dart';
 import 'package:gembawalk_front/config/colors.dart';
 
 class ChecklistScreen extends StatefulWidget {
   final String title;
-  // Removed: final List<String> items;
   final Map<String, dynamic>? initialData;
   final Function(Map<String, dynamic>) onSaveData;
   final Widget? nextScreen;
@@ -18,7 +15,6 @@ class ChecklistScreen extends StatefulWidget {
   const ChecklistScreen({
     super.key,
     required this.title,
-    // Removed: required this.items,
     this.initialData,
     required this.onSaveData,
     this.nextScreen,
@@ -30,10 +26,10 @@ class ChecklistScreen extends StatefulWidget {
 }
 
 class _ChecklistScreenState extends State<ChecklistScreen> {
-  late Map<int, String?> conformity; // Keyed by ChecklistItem ID
-  late Map<int, TextEditingController> ticketControllers; // Keyed by ChecklistItem ID
-  late Map<int, TextEditingController> commentControllers; // Keyed by ChecklistItem ID
-  late Map<int, List<XFile>> images; // Keyed by ChecklistItem ID
+  late Map<int, String?> conformity;
+  late Map<int, TextEditingController> ticketControllers;
+  late Map<int, TextEditingController> commentControllers;
+  late Map<int, List<XFile>> images;
   final _picker = ImagePicker();
 
   @override
@@ -45,7 +41,8 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
     images = {};
 
     for (var item in widget.rubrique.checklistItems) {
-      conformity[item.id] = widget.initialData?['conformity']?['item_${item.id}'] as String?;
+      conformity[item.id] =
+          widget.initialData?['conformity']?['item_${item.id}'] as String?;
       ticketControllers[item.id] = TextEditingController(
         text: widget.initialData?['ticketNumbers']?['item_${item.id}'] ?? '',
       );
@@ -68,20 +65,22 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
   }
 
   Map<String, dynamic> _collectData() => {
-        'conformity': {
-          for (var entry in conformity.entries) 'item_${entry.key}': entry.value
-        },
-        'ticketNumbers': {
-          for (var entry in ticketControllers.entries) 'item_${entry.key}': entry.value.text
-        },
-        'comments': {
-          for (var entry in commentControllers.entries) 'item_${entry.key}': entry.value.text
-        },
-        'images': {
-          for (var entry in images.entries)
-            'item_${entry.key}': entry.value.map((e) => e.path).toList()
-        },
-      };
+    'conformity': {
+      for (var entry in conformity.entries) 'item_${entry.key}': entry.value,
+    },
+    'ticketNumbers': {
+      for (var entry in ticketControllers.entries)
+        'item_${entry.key}': entry.value.text,
+    },
+    'comments': {
+      for (var entry in commentControllers.entries)
+        'item_${entry.key}': entry.value.text,
+    },
+    'images': {
+      for (var entry in images.entries)
+        'item_${entry.key}': entry.value.map((e) => e.path).toList(),
+    },
+  };
 
   void _autoSave() {
     widget.onSaveData(_collectData());
@@ -95,67 +94,67 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
   void _goNext() {
     _autoSave();
     if (widget.nextScreen != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => widget.nextScreen!),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => widget.nextScreen!));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.primary,
-          title: Text(widget.title,
-              style: const TextStyle(color: AppColors.white)),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        title: Text(
+          widget.title,
+          style: const TextStyle(color: AppColors.white),
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: widget.rubrique.checklistItems.map((item) {
-                  return ChecklistItemWidget(
-                    itemName: item.name,
-                    conformity: conformity[item.id],
-                    ticketController: ticketControllers[item.id]!,
-                    commentController: commentControllers[item.id]!,
-                    images: images[item.id]!,
-                    onConformityChanged: (v) {
-                      setState(() => conformity[item.id] = v);
-                      _autoSave();
-                    },
-                    onTicketChanged: (v) {
-                      setState(() {});
-                      _autoSave();
-                    },
-                    onCommentChanged: (v) {
-                      setState(() {});
-                      _autoSave();
-                    },
-                    onAddImage: () async {
-                      final img =
-                          await _picker.pickImage(source: ImageSource.camera);
-                      if (img != null) {
-                        setState(() => images[item.id]!.add(img));
-                        _autoSave();
-                      }
-                    },
-                    onRemoveImage: (i) {
-                      setState(() => images[item.id]!.removeAt(i));
-                      _autoSave();
-                    },
-                  );
-                }).toList(),
-              ),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: widget.rubrique.checklistItems.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final item = widget.rubrique.checklistItems[index];
+                return ChecklistItemWidget(
+                  itemName: item.name,
+                  conformity: conformity[item.id],
+                  ticketController: ticketControllers[item.id]!,
+                  commentController: commentControllers[item.id]!,
+                  onConformityChanged: (v) {
+                    setState(() => conformity[item.id] = v);
+                    _autoSave();
+                  },
+                  onTicketChanged: (v) {
+                    setState(() {});
+                    _autoSave();
+                  },
+                  onCommentChanged: (v) {
+                    setState(() {});
+                    _autoSave();
+                  },
+                );
+              },
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          SafeArea(
+            top: false,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -165,28 +164,32 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: AppColors.primary),
                         foregroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text('Retourner au Menu'),
                     ),
                   ),
                   if (widget.nextScreen != null) ...[
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _goNext,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: const Text('Suivant',
-                            style: TextStyle(color: AppColors.white)),
+                        child: const Text(
+                          'Suivant',
+                          style: TextStyle(color: AppColors.white),
+                        ),
                       ),
                     ),
                   ],
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

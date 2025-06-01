@@ -63,8 +63,32 @@ public class ChecklistResponseService {
                         clr.getItem().getName(),
                         clr.getStatus().name(),
                         clr.getTicketNumber(),
-                        clr.getComment()
+                        clr.getComment(),
+                        clr.isResolved(),
+                        clr.isConfirmed()
                         ))
                 .collect(Collectors.toList());
     }
+    @Transactional
+    public void updateResolved(Long responseId, boolean resolved) {
+        ChecklistResponse response = checklistResponseRepository.findById(responseId)
+                .orElseThrow(() -> new IllegalArgumentException("ChecklistResponse not found with id: " + responseId));
+
+        if (response.isResolved() == resolved) return;
+
+        response.setResolved(resolved);
+        checklistResponseRepository.save(response);
+    }
+
+    @Transactional
+    public void updateConfirmed(Long responseId, boolean confirmed) {
+        ChecklistResponse response = checklistResponseRepository.findById(responseId)
+                .orElseThrow(() -> new IllegalArgumentException("ChecklistResponse not found with id: " + responseId));
+
+        if (response.isConfirmed() == confirmed) return;
+
+        response.setConfirmed(confirmed);
+        checklistResponseRepository.save(response);
+    }
+
 }

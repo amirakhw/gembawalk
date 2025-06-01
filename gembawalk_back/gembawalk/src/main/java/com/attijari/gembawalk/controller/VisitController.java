@@ -23,11 +23,16 @@ public class VisitController {
     public void submitVisit(@RequestBody SubmitVisitDto dto) {
         visitService.createVisitWithResponses(dto);
     }
-    /*
-    @GetMapping("/{formId}")
 
+    @PostMapping("/terminate/{visitId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void terminateVisit(@PathVariable long visitId){
+        visitService.terminate(visitId);
+    }
+
+    @GetMapping("/{formId}")
     public FormDto getForm(@PathVariable Long formId) {
         return formService.getFormWithRubriques(formId);
     }
-    */
+
 }

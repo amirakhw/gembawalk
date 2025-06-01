@@ -1,3 +1,5 @@
+import 'package:gembawalk_front/core/models/checklist_item_reponse.dart';
+
 import 'checklist_item.dart';
 import 'question.dart';
 
@@ -41,14 +43,19 @@ class Rubrique {
       type: type,
       order: order,
       checklistItems: checklistItems.map((item) => item.copy()).toList(),
+      questions: questions.map<Question>((q) => q.copy()).toList(),
     );
   }
 
   @override
   String toString() {
-    return """ ** Rubrique: $name  id:$id
+    /* return """ ** Rubrique: $name  id:$id
     type $type  - order $order
     *******************************************
-    ${checklistItems.map((item) => item.toString() + "\n -------_____________-------- \n")}""";
+    ${checklistItems.map((item) => item.toString() + "\n -------_____________-------- \n")}"""; */
+
+    return """ ** Rubrique: $name  id:$id
+    type $type  - order $order
+    *******************************************- \n")}""";
   }
 }

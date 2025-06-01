@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:gembawalk_front/config/colors.dart'; // Make sure AppColors is used
 
 class ChecklistItemWidget extends StatelessWidget {
   final String itemName;
   final String? conformity;
   final TextEditingController ticketController;
   final TextEditingController commentController;
-  final List<XFile> images;
   final Function(String?) onConformityChanged;
   final Function(String) onTicketChanged;
   final Function(String) onCommentChanged;
-  final Function() onAddImage;
-  final Function(int) onRemoveImage;
 
   const ChecklistItemWidget({
     super.key,
@@ -20,86 +16,101 @@ class ChecklistItemWidget extends StatelessWidget {
     required this.conformity,
     required this.ticketController,
     required this.commentController,
-    required this.images,
     required this.onConformityChanged,
     required this.onTicketChanged,
     required this.onCommentChanged,
-    required this.onAddImage,
-    required this.onRemoveImage,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          itemName,
-          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-        ),
-        Row(
-          children: [
-            Radio<String>(
-              value: 'CONFORM',
-              groupValue: conformity,
-              onChanged: (value) {
-                onConformityChanged(value);
-              },
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            itemName,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.primary,
             ),
-
-            const Text('Conforme'),
-            Radio<String>(
-              value: 'NON_CONFORM',
-              groupValue: conformity,
-              onChanged: onConformityChanged,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              ChoiceChip(
+                label: const Text('Conforme'),
+                selected: conformity == 'CONFORM',
+                selectedColor: AppColors.primary,
+                onSelected: (_) => onConformityChanged('CONFORM'),
+                labelStyle: TextStyle(
+                  color:
+                      conformity == 'CONFORM'
+                          ? Colors.white
+                          : AppColors.primary,
+                ),
+                backgroundColor: AppColors.primary.withOpacity(0.1),
+              ),
+              const SizedBox(width: 12),
+              ChoiceChip(
+                label: const Text('Non Conforme'),
+                selected: conformity == 'NON_CONFORM',
+                selectedColor: Colors.redAccent,
+                onSelected: (_) => onConformityChanged('NON_CONFORM'),
+                labelStyle: TextStyle(
+                  color:
+                      conformity == 'NON_CONFORM'
+                          ? Colors.white
+                          : Colors.redAccent,
+                ),
+                backgroundColor: Colors.redAccent.withOpacity(0.1),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (conformity == 'NON_CONFORM')
+            TextField(
+              controller: ticketController,
+              onChanged: onTicketChanged,
+              decoration: InputDecoration(
+                labelText: 'Numéro de Ticket',
+                filled: true,
+                fillColor: AppColors.primary.withOpacity(0.05),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
-            const Text('Non Conforme'),
-            IconButton(
-              icon: const Icon(Icons.camera_alt),
-              onPressed: onAddImage,
-            ),
-          ],
-        ),
-        if (conformity == 'NON_CONFORM')
+          if (conformity == 'NON_CONFORM') const SizedBox(height: 12),
           TextField(
-            controller: ticketController,
-            decoration: const InputDecoration(labelText: 'Numéro de Ticket'),
-            onChanged: onTicketChanged,
-          ),
-        TextField(
-          controller: commentController,
-          decoration: const InputDecoration(labelText: 'Commentaires'),
-          onChanged: onCommentChanged,
-        ),
-        if (images.isNotEmpty)
-          SizedBox(
-            height: 100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: images.length,
-              itemBuilder: (context, index) {
-                return Stack(
-                  children: [
-                    Image.file(
-                      File(images[index].path),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                    Positioned(
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () => onRemoveImage(index),
-                        child: const Icon(Icons.close, color: Colors.red),
-                      ),
-                    ),
-                  ],
-                );
-              },
+            controller: commentController,
+            onChanged: onCommentChanged,
+            decoration: InputDecoration(
+              labelText: 'Commentaires',
+              filled: true,
+              fillColor: AppColors.primary.withOpacity(0.05),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
+            maxLines: 2,
           ),
-        const Divider(),
-      ],
+        ],
+      ),
     );
   }
 }

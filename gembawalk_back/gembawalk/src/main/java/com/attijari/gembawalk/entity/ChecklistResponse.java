@@ -30,6 +30,26 @@ public class ChecklistResponse {
     private String photoUrl;
     private LocalDateTime createdAt;
 
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    private boolean resolved;
+    private boolean confirmed;
+
+
     public Long getId() {
         return id;
     }

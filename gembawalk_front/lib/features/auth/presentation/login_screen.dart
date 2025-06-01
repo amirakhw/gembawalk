@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gembawalk_front/config/colors.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import '../../dashboard/dashboard_viewer_screen.dart';
 import '../../home/technician_home_screen.dart';
 import '../../home/visitor_home_screen.dart';
 import 'package:gembawalk_front/config/theme.dart';
@@ -67,7 +69,10 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (role == 'ROLE_TECHNICIAN') {
           nextPage = const TechnicianHomeScreen();
         } else if (role == 'ROLE_DASHBOARD_VIEWER') {
-          nextPage = const Text('Dashboard Viewer Screen Placeholder');
+          nextPage = DashboardScreen(
+            userName: decodedToken['username'] ?? 'Responsable',
+            userRole: "ROLE_DASHBOARD_VIEWER",
+          );
         } else {
           _showSnackBar('Rôle utilisateur inconnu.');
           return;
@@ -103,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  @override
+  /*  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: attijariTheme.scaffoldBackgroundColor,
@@ -167,6 +172,122 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  } */
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: attijariTheme.scaffoldBackgroundColor,
+      body: Stack(
+        children: [
+          // 🎨 Background dégradé subtil
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF7F7F7), Color(0xFFECECEC)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          // 📦 Contenu principal avec Card stylée
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  color: Colors.white.withOpacity(0.95),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        // 🦸 Hero animation logo
+                        Hero(
+                          tag: 'attijariLogo',
+                          child: const Image(
+                            height: 80,
+                            image: AssetImage("assets/images/attijariLogo.png"),
+                          ),
+                        ),
+                        const SizedBox(height: 48.0),
+                        Text(
+                          'Bienvenue',
+                          textAlign: TextAlign.center,
+                          style: attijariTheme.textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 24.0),
+                        TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          style: attijariTheme.textTheme.bodyMedium,
+                          controller: _usernameController,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextFormField(
+                          obscureText: _isObscure,
+                          decoration: InputDecoration(
+                            labelText: 'Mot de passe',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                          ),
+                          style: attijariTheme.textTheme.bodyMedium,
+                          controller: _passwordController,
+                        ),
+                        const SizedBox(height: 32.0),
+                        // 🔘 Bouton amélioré
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: attijariWhite,
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: _login,
+                          child: const Text('Se connecter'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

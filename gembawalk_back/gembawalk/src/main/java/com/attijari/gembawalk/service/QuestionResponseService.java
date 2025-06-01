@@ -30,7 +30,7 @@ public class QuestionResponseService {
 
     @Transactional
     public void saveQuestionResponse(Visit visit, QuestionResponseDto dto) {
-        Rubrique rubrique = rubriqueRepository.findById(dto.getRubriqueId())
+        Rubrique rubrique = rubriqueRepository.findById(dto.getRubriqueId()) //verify if rubrique exists
                 .orElseThrow(() -> new IllegalArgumentException("Rubrique not found: " + dto.getRubriqueId()));
         Question question = questionRepository.findById(dto.getQuestionId())
                 .orElseThrow(() -> new IllegalArgumentException("Question not found: " + dto.getQuestionId()));

@@ -8,7 +8,7 @@ class PlanActionModel {
   //String email;
   //final DateTime? created_at;
   final List<ChecklistItemReponseModel> rubriques;
-  //bool active;
+  bool? active;
 
   PlanActionModel({
     required this.id,
@@ -17,7 +17,7 @@ class PlanActionModel {
     //required this.email,
     //required this.created_at,
     this.rubriques = const [],
-    //required this.active,
+    this.active,
   });
 
   factory PlanActionModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +26,7 @@ class PlanActionModel {
       agence_id: json["agence"]["id"],
       agence_name:
           "${json['agence']["name"]}, ${json['agence']["group"]["name"]}, ${json['agence']["group"]["region"]["name"]}",
+      active: json["active"],
     );
   }
 

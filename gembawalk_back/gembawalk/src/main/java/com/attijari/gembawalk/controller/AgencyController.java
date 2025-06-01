@@ -26,13 +26,7 @@ public class AgencyController {
         List<AgencyDto> agencies = agencyService.getAgenciesByGroup(groupId);
         return new ResponseEntity<>(agencies, HttpStatus.OK);
     }
-        /*
-    @GetMapping("/{formId}")
 
-    public FormDto getForm(@PathVariable Long formId) {
-        return formService.getFormWithRubriques(formId);
-    }
-    */
     @GetMapping("/all")
     public List<Agency> getagencies(){
         return agencyService.getAllAgencies();

@@ -7,6 +7,8 @@ class ChecklistItemReponseModel {
   String? comment;
   String? ticket_number;
   String? status; //CONFORM & NON CONFORM
+  bool? confirmed;
+  bool? resolved;
 
   ChecklistItemReponseModel({
     required this.id,
@@ -17,6 +19,8 @@ class ChecklistItemReponseModel {
     required this.comment,
     required this.ticket_number,
     required this.status,
+    this.confirmed,
+    this.resolved,
   });
 
   factory ChecklistItemReponseModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,8 @@ class ChecklistItemReponseModel {
       comment: json['commnent'],
       ticket_number: json['ticketNumber'],
       status: json['status'],
+      confirmed: json['confirmed'],
+      resolved: json['resolved'],
     );
   }
 

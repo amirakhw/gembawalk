@@ -14,32 +14,14 @@ class LocalDB extends ChangeNotifier {
     baseUrl: 'http://${dotenv.get('LOCALIP')}:8080/api',
   );
   PlanactionApiService planactionApiService = PlanactionApiService();
-  //  liste de visit<rubriques<rubrique_id , checklist_item>>
   final List<Visit> _allData = [];
   late Future<FormModel> _form;
-  //late List<Future<AgenceModel>> _agences;
-  //late String _agence_name;
 
   List<Visit> get localDB => _allData;
 
   LocalDB() {
     _form = formApiService.fetchForm(1);
-    //_agences = AgenceApiService(baseUrl: 'http://' + dotenv.get('LOCALIP') + ':8080/api').fetchAgence();
   }
-
-  /* Future<void> _fetchAgencies() async {
-    final response = await http.get(
-      Uri.parse('http://' + dotenv.get('LOCALIP') + ':8080/api/agencies/all'),
-    );
-    if (response.statusCode == 200) {
-      print(
-        "*****************json agency **************************** \n $_agences",
-      );
-      _agences = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-    } else {
-      print('Erreur lors du chargement des agences.');
-    }
-  } */
 
   Future<void> add(data, agenceId) async {
     print(
@@ -51,19 +33,19 @@ class LocalDB extends ChangeNotifier {
     _reponse = formModel.copyRubriqueList();
 
     for (var rub in _reponse) {
-      for (var item in rub.checklistItems) {
-        item.comment = data[rub.id]?['comments']?['item_${item.id}'];
-        item.ticket_number = data[rub.id]?['ticketNumbers']?['item_${item.id}'];
-        item.status = data[rub.id]?['conformity']?['item_${item.id}'];
+      if (rub.type == "CHECKLIST") {
+        for (var item in rub.checklistItems) {
+          item.comment = data[rub.id]?['comments']?['item_${item.id}'];
+          item.ticket_number =
+              data[rub.id]?['ticketNumbers']?['item_${item.id}'];
+          item.status = data[rub.id]?['conformity']?['item_${item.id}'];
+        }
+      } else if (rub.type == "QUESTIONS") {
+        for (var item in rub.questions) {
+          item.responseText = data[rub.id]?["question_${item.id}"];
+        }
       }
     }
-
-    /* for (var ag in agList) {
-      print("************************ $ag ************************");
-      if (ag["id"] == agenceId) {
-        _agence_name = ag["name"];
-      }
-    } */
 
     Visit visit = Visit(
       id: _allData.length,

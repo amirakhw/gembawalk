@@ -99,18 +99,21 @@ class Visit {
     + agenceId : Long
     + formId : Long
     + userId : Long
+    + active : Boolean
 }
 
 class ChecklistResponse {
     + id : Long
     + comment : String
     + createdAt : DateTime
-    + photoUrl : String
     + status : ResponseStatus
     + ticketNumber : String
     + itemId : Long
     + rubriqueId : Long
     + visitId : Long
+    + resolved : boolean
+    + confirmed : boolean
+
 }
 
 class QuestionResponse {

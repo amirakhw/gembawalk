@@ -1,6 +1,7 @@
 // Optimised version of NouvelleVisiteScreen
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:gembawalk_front/config/colors.dart';
 import 'package:gembawalk_front/config/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,7 +30,9 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
   }
 
   Future<void> _fetchRegions() async {
-    final response = await http.get(Uri.parse('http://'+ dotenv.get('LOCALIP') +':8080/api/regions'));
+    final response = await http.get(
+      Uri.parse('http://' + dotenv.get('LOCALIP') + ':8080/api/regions'),
+    );
     if (response.statusCode == 200) {
       setState(() {
         _regions = List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -41,7 +44,13 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
   }
 
   Future<void> _fetchGroups(int regionId) async {
-    final response = await http.get(Uri.parse('http://'+ dotenv.get('LOCALIP') +':8080/api/groups?regionId=$regionId'));
+    final response = await http.get(
+      Uri.parse(
+        'http://' +
+            dotenv.get('LOCALIP') +
+            ':8080/api/groups?regionId=$regionId',
+      ),
+    );
     if (response.statusCode == 200) {
       setState(() {
         _groupes = List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -55,7 +64,13 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
   }
 
   Future<void> _fetchAgencies(int groupId) async {
-    final response = await http.get(Uri.parse('http://'+ dotenv.get('LOCALIP') +':8080/api/agencies?groupId=$groupId'));
+    final response = await http.get(
+      Uri.parse(
+        'http://' +
+            dotenv.get('LOCALIP') +
+            ':8080/api/agencies?groupId=$groupId',
+      ),
+    );
     if (response.statusCode == 200) {
       setState(() {
         _agences = List<Map<String, dynamic>>.from(jsonDecode(response.body));
@@ -67,14 +82,28 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
   }
 
   void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  List<DropdownMenuItem<int>> _buildDropdownItems(List<Map<String, dynamic>> items) {
-    return items.map((item) => DropdownMenuItem<int>(
-      value: item['id'],
-      child: Text(item['name'], style: const TextStyle(fontSize: 16.0, color: attijariTextSecondary)),
-    )).toList();
+  List<DropdownMenuItem<int>> _buildDropdownItems(
+    List<Map<String, dynamic>> items,
+  ) {
+    return items
+        .map(
+          (item) => DropdownMenuItem<int>(
+            value: item['id'],
+            child: Text(
+              item['name'],
+              style: const TextStyle(
+                fontSize: 16.0,
+                color: attijariTextSecondary,
+              ),
+            ),
+          ),
+        )
+        .toList();
   }
 
   Widget _buildDropdown({
@@ -87,14 +116,36 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
       isExpanded: true,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
-        focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: attijariPrimary, width: 1.5)),
-        enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.grey)),
+        labelStyle: const TextStyle(
+          color: AppColors.secondary,
+          fontWeight: FontWeight.w600,
+          fontSize: 16.0,
+        ),
         filled: true,
         fillColor: attijariWhite,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 14.0,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: const BorderSide(color: Colors.grey),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(color: AppColors.secondary, width: 2.0),
+        ),
       ),
       dropdownColor: attijariWhite,
-      style: const TextStyle(fontSize: 16.0, color: attijariTextPrimary),
+      style: const TextStyle(
+        fontSize: 16.0,
+        color: attijariTextPrimary,
+        fontWeight: FontWeight.w500,
+      ),
       value: value,
       items: _buildDropdownItems(items),
       onChanged: onChanged,
@@ -105,21 +156,35 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: attijariPrimary,
-        title: const Text('Détails de la visite', style: TextStyle(color: attijariWhite, fontWeight: FontWeight.bold)),
+        backgroundColor: AppColors.primary,
+        title: const Text(
+          'Détails de la visite',
+          style: TextStyle(
+            color: attijariWhite,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         iconTheme: const IconThemeData(color: attijariWhite),
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
+          children: [
+            const SizedBox(height: 12.0),
             const Text(
               'Sélectionnez les détails de la visite',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: attijariTextPrimary),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: attijariTextPrimary,
+              ),
             ),
             const SizedBox(height: 32.0),
+
             _buildDropdown(
               label: 'Région',
               value: _selectedRegionId,
@@ -135,6 +200,7 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
                 if (value != null) _fetchGroups(value);
               },
             ),
+
             const SizedBox(height: 16.0),
             _buildDropdown(
               label: 'Groupe',
@@ -149,6 +215,7 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
                 if (value != null) _fetchAgencies(value);
               },
             ),
+
             const SizedBox(height: 16.0),
             _buildDropdown(
               label: 'Agence',
@@ -160,41 +227,46 @@ class _NouvelleVisiteScreenState extends State<NouvelleVisiteScreen> {
                 });
               },
             ),
+
             const SizedBox(height: 48.0),
-            SizedBox(
-              width: double.infinity,
-              height: 50.0,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: attijariPrimary,
-                  textStyle: const TextStyle(fontSize: 20.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: attijariWhite,
+                elevation: 3,
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                textStyle: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
                 ),
-                onPressed: () {
-                  if (_selectedRegionId != null && _selectedGroupId != null && _selectedAgenceId != null) {
-                    final selectedRegion = _regions.firstWhere((r) => r['id'] == _selectedRegionId);
-                    final selectedGroup = _groupes.firstWhere((g) => g['id'] == _selectedGroupId);
-                    final selectedAgence = _agences.firstWhere((a) => a['id'] == _selectedAgenceId);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GembaWalkMenuScreen(
-                          formId: 1,
-                          regionId: _selectedRegionId!,
-                          groupId: _selectedGroupId!,
-                          agenceId: _selectedAgenceId!,
-                          //regionName: selectedRegion['name'],
-                          //groupName: selectedGroup['name'],
-                          //agenceName: selectedAgence['name'],
-                        ),
-                      ),
-                    );
-                  } else {
-                    _showErrorSnackBar("Veuillez sélectionner la région, le groupe et l'agence.");
-                  }
-                },
-                child: const Text('Commencer la visite', style: TextStyle(color: attijariWhite)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
               ),
+              onPressed: () {
+                if (_selectedRegionId != null &&
+                    _selectedGroupId != null &&
+                    _selectedAgenceId != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => GembaWalkMenuScreen(
+                            formId: 1,
+                            regionId: _selectedRegionId!,
+                            groupId: _selectedGroupId!,
+                            agenceId: _selectedAgenceId!,
+                          ),
+                    ),
+                  );
+                } else {
+                  _showErrorSnackBar(
+                    "Veuillez sélectionner la région, le groupe et l'agence.",
+                  );
+                }
+              },
+              child: const Text('Commencer la visite'),
             ),
           ],
         ),

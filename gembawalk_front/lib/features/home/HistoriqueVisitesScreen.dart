@@ -1,105 +1,118 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:gembawalk_front/config/theme.dart';
-import 'VisiteDetailsScreen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:gembawalk_front/config/colors.dart';
+import 'package:http/http.dart' as http;
+import '../../core/models/visit_history_model.dart';
+import 'HistoriqueVisiteDetailsScreen.dart';
 
+class HistoriqueVisitesScreen extends StatefulWidget {
+  const HistoriqueVisitesScreen({super.key});
 
-class HistoriqueVisitesScreen extends StatelessWidget {
-  // Mock data for visited agencies.  In a real app, this would come from a database or API.
-  final List<Map<String, dynamic>> _visitedAgencies = [
-    {
-      'id': 1,
-      'name': 'Agence Principale',
-      'date': '2024-07-24',
-      'rubriques': [
-        {
-          'title': 'Façade',
-          'conformity': {'Habillage GAB': 'conforme', 'Revêtement Marbre': 'non conforme'},
-          'comments': {'Habillage GAB': '', 'Revêtement Marbre': 'Marbre fissuré'},
-          'ticketNumbers': {'Habillage GAB': '', 'Revêtement Marbre': 'TKT-12345'},
-          'images': [],
-        },
-        {
-          'title': 'Enseignes lumineuses',
-          'conformity': {'Enseigne 1': 'conforme', 'Enseigne 2': 'conforme'},
-          'comments': {'Enseigne 1': '', 'Enseigne 2': ''},
-          'ticketNumbers': {'Enseigne 1': '', 'Enseigne 2': ''},
-          'images': [],
-        },
-      ],
-    },
-    {
-      'id': 2,
-      'name': 'Agence Quartier X',
-      'date': '2024-07-23',
-      'rubriques': [
-        {
-          'title': 'Façade',
-          'conformity': {'Habillage GAB': 'non conforme', 'Revêtement Marbre': 'conforme'},
-          'comments': {'Habillage GAB': 'Besoin de réparation', 'Revêtement Marbre': ''},
-          'ticketNumbers': {'Habillage GAB': 'TKT-54321', 'Revêtement Marbre': ''},
-          'images': [],
-        },
-        {
-          'title': 'Guichet',
-          'conformity': {'Guichet 1': 'conforme', 'Guichet 2': 'non conforme'},
-          'comments': {'Guichet 1': '', 'Guichet 2': 'Problème tiroir caisse'},
-          'ticketNumbers': {'Guichet 1': '', 'Guichet 2': 'TKT-98765'},
-          'images': [],
-        },
-      ],
-    },
-    {
-      'id': 3,
-      'name': 'Agence Y',
-      'date': '2024-07-20',
-      'rubriques': [
-        {
-          'title': 'Bloc Sanitaire',
-          'conformity': {'État général': 'non conforme', 'Propreté': 'non conforme'},
-          'comments': {'État général': 'Nécessite rénovation', 'Propreté': 'Sale'},
-          'ticketNumbers': {'État général': 'TKT-2468', 'Propreté': 'TKT-1357'},
-          'images': [],
-        },
-      ]
+  @override
+  State<HistoriqueVisitesScreen> createState() =>
+      _HistoriqueVisitesScreenState();
+}
+
+class _HistoriqueVisitesScreenState extends State<HistoriqueVisitesScreen> {
+  late Future<List<VisitHistoryModel>> _visitsFuture;
+  //List<VisitHistoryModel> HistoriqueList = [];
+  final userId = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _visitsFuture = fetchVisitHistory(userId);
+  }
+
+  Future<List<VisitHistoryModel>> fetchVisitHistory(int userId) async {
+    final response = await http.get(
+      Uri.parse(
+        'http://${dotenv.get('LOCALIP')}:8080/api/visits/query/user/$userId',
+      ),
+    );
+    if (response.statusCode == 200) {
+      List<dynamic> _rep = jsonDecode(response.body);
+      List<VisitHistoryModel> list =
+          _rep.map((el) => VisitHistoryModel.fromJson(el)).toList();
+      setState(() {
+        //HistoriqueList = list;
+      });
+      return list;
+    } else {
+      _showErrorSnackBar('Erreur lors du chargement des visites.');
+      return [];
     }
-  ];
+  }
 
-  HistoriqueVisitesScreen({super.key});
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  String _twoDigits(int n) => n.toString().padLeft(2, '0');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: attijariPrimary,
-        title: const Text('Historique des Visites',
-            style: TextStyle(color: attijariWhite, fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: attijariWhite),
+        backgroundColor: AppColors.primary,
+        title: const Text(
+          'Historique des Visites',
+          style: TextStyle(
+            color: AppColors.background,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: AppColors.background),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: _visitedAgencies.length,
-          itemBuilder: (context, index) {
-            final agency = _visitedAgencies[index];
-            return Card(
-              elevation: 3,
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
-              child: ListTile(
-                title: Text(agency['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Date: ${agency['date']}'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => VisiteDetailsScreen(
-                        agencyName: agency['name'],
-                        rubriques: agency['rubriques'],
-                      ),
+        child: FutureBuilder<List<VisitHistoryModel>>(
+          future: _visitsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Erreur: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('Aucune visite trouvée.'));
+            }
+
+            final visits = snapshot.data!;
+            return ListView.builder(
+              itemCount: visits.length,
+              itemBuilder: (context, index) {
+                final visit = visits[index];
+                final DateTime dt = visit.created_at;
+                String formatted =
+                    "${_twoDigits(dt.day)}/${_twoDigits(dt.month)}/${dt.year} - ${_twoDigits(dt.hour)}:${_twoDigits(dt.minute)}";
+                return Card(
+                  elevation: 3,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text(
+                      visit.agence_name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              ),
+                    subtitle: Text('Date: ${formatted}'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => HistoriqueVisiteDetailsScreen(
+                                visitId: visit.id,
+                              ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             );
           },
         ),

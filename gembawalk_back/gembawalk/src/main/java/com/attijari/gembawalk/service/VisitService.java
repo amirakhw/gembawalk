@@ -56,39 +56,7 @@ public class VisitService {
     }
 
 
-    @Transactional
-    public void saveVisit(VisitRequestDto dto) {
-        Visit visit = new Visit();
-        visit.setForm(formRepository.findById(dto.getFormId()).orElseThrow());
-        visit.setAgence(agencyRepository.findById(dto.getAgenceId()).orElseThrow());
-        visit.setUser(userRepository.findById(dto.getUserId()).orElseThrow());
-        visit.setDate(LocalDate.now());
-        visitRepository.save(visit);
 
-        List<ChecklistResponse> checklistResponses = dto.getChecklistResponses().stream().map(cr -> {
-            ChecklistResponse response = new ChecklistResponse();
-            response.setVisit(visit);
-            response.setRubrique(rubriqueRepository.findById(cr.getRubriqueId()).orElseThrow());
-            response.setItem(checklistItemRepository.findById(cr.getItemId()).orElseThrow());
-            response.setStatus(ChecklistResponse.Status.fromString(cr.getStatus()));
-            response.setTicketNumber(cr.getTicketNumber());
-            response.setComment(cr.getComment());
-            return response;
-        }).collect(Collectors.toList());
-
-        checklistResponseRepository.saveAll(checklistResponses);
-
-        List<QuestionResponse> questionResponses = dto.getQuestionResponses().stream().map(qr -> {
-            QuestionResponse response = new QuestionResponse();
-            response.setVisit(visit);
-            response.setRubrique(rubriqueRepository.findById(qr.getRubriqueId()).orElseThrow());
-            response.setQuestion(questionRepository.findById(qr.getQuestionId()).orElseThrow());
-            response.setResponseText(qr.getResponseText());
-            return response;
-        }).collect(Collectors.toList());
-
-        questionResponseRepository.saveAll(questionResponses);
-    }
     @Transactional
     public Visit createVisitWithResponses(SubmitVisitDto dto) {
         Visit visit = new Visit();
@@ -114,6 +82,44 @@ public class VisitService {
         return savedVisit;
     }
 
+    public void terminate(long visitId){
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new IllegalArgumentException("Visit not found with id: " + visitId));
+        visit.setActive(false);
+        visitRepository.save(visit);
+    }
+ /*@Transactional
+    public void saveVisit(VisitRequestDto dto) {
+        Visit visit = new Visit();
+        visit.setForm(formRepository.findById(dto.getFormId()).orElseThrow());
+        visit.setAgence(agencyRepository.findById(dto.getAgenceId()).orElseThrow());
+        visit.setUser(userRepository.findById(dto.getUserId()).orElseThrow());
+        visit.setDate(LocalDate.now());
+        visitRepository.save(visit);
+//split checklist and question to save each in its table
+        List<ChecklistResponse> checklistResponses = dto.getChecklistResponses().stream().map(cr -> {
+            ChecklistResponse response = new ChecklistResponse();
+            response.setVisit(visit);
+            response.setRubrique(rubriqueRepository.findById(cr.getRubriqueId()).orElseThrow());
+            response.setItem(checklistItemRepository.findById(cr.getItemId()).orElseThrow());
+            response.setStatus(ChecklistResponse.Status.fromString(cr.getStatus()));
+            response.setTicketNumber(cr.getTicketNumber());
+            response.setComment(cr.getComment());
+            return response;
+        }).collect(Collectors.toList());
 
+        checklistResponseRepository.saveAll(checklistResponses);
+
+        List<QuestionResponse> questionResponses = dto.getQuestionResponses().stream().map(qr -> {
+            QuestionResponse response = new QuestionResponse();
+            response.setVisit(visit);
+            response.setRubrique(rubriqueRepository.findById(qr.getRubriqueId()).orElseThrow());
+            response.setQuestion(questionRepository.findById(qr.getQuestionId()).orElseThrow());
+            response.setResponseText(qr.getResponseText());
+            return response;
+        }).collect(Collectors.toList());
+
+        questionResponseRepository.saveAll(questionResponses);
+    }*/
 
 }

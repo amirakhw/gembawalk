@@ -62,16 +62,35 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
     setState(() {
       allData[rubriqueId] = newData;
       rubriqueCompletionStatus[rubriqueId] = isCompleted;
+
+      print(allData);
     });
   }
 
-  void _submitForm() {
-    context.read<LocalDB>().add(allData, widget.agenceId);
+  void _submitForm() async {
+    if (_isFormCompleted) {
+      final confirmPopUP = await showConfirmationDialog(
+        context,
+        content: 'Êtes-vous sûr de vouloir clôturer ce plan d\'action ?',
+      );
 
-    setState(() {
-      allData = {};
-      rubriqueCompletionStatus = {};
-    });
+      if (confirmPopUP) {
+        context.read<LocalDB>().add(allData, widget.agenceId);
+
+        setState(() {
+          allData = {};
+          rubriqueCompletionStatus = {};
+          _isFormCompleted = false;
+        });
+      }
+    } else {
+      await showConfirmationDialog(
+        context,
+        content: 'kamel confirmi el items 9bal clôturer ce plan d\'action',
+        confirmText: "behi",
+        cancelText: "sama7ni",
+      );
+    }
   }
 
   void navigateToRubrique(Rubrique rubrique) {
@@ -87,6 +106,7 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
             _isChecklistCompleted(
               newData,
               rubrique.checklistItems,
+              rubrique.id!,
             ), // Use checklistItems
           );
         };
@@ -112,9 +132,8 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
         nextScreen = QuestionnaireScreen(
           title: rubrique.name,
           questions: rubrique.questions,
-
+          initialData: allData[rubrique.id],
           //rubrique: rubrique,
-          //initialData: allData,
           onSaveData: onSave,
         );
 
@@ -130,10 +149,20 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
   bool _isChecklistCompleted(
     Map<String, dynamic> responses,
     List<ChecklistItem> items,
+    int id,
   ) {
-    // Implement your logic to check if all required checklist items are completed
-    // based on the 'responses' and 'items'
-    return false; // Replace with actual logic
+    for (var item in items) {
+      if (responses["conformity"] == null ||
+          !responses["conformity"].containsKey("item_${item.id}") ||
+          responses["conformity"]["item_${item.id}"] == null) {
+        print(
+          "-----------------------  chacking rubrique completion ---------------------",
+        );
+        print(responses);
+        return false;
+      }
+    }
+    return true; // Replace with actual logic
   }
 
   // Placeholder for questions answered logic
@@ -146,6 +175,35 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
     return false; // Replace with actual logic
   }
 
+  Future<bool> showConfirmationDialog(
+    BuildContext context, {
+    String title = 'Confirmation',
+    String content = 'Êtes-vous sûr de vouloir marquer comme confirmé ?',
+    String confirmText = 'Oui',
+    String cancelText = 'Non',
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: Text(content),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(cancelText),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(confirmText),
+              ),
+            ],
+          ),
+    );
+
+    return result ?? false; // false if dialog is dismissed
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -153,63 +211,122 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
         appBar: AppBar(
           title: const Text('Gemba Walk'),
           backgroundColor: AppColors.primary,
+          elevation: 4,
+          centerTitle: true,
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder<FormModel>(
-                future: _formFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            children: [
+              Expanded(
+                child: FutureBuilder<FormModel>(
+                  future: _formFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Erreur : ${snapshot.error}'));
-                  }
-
-                  final form = snapshot.data!;
-                  final rubriques = form.rubriques;
-
-                  return ListView.builder(
-                    itemCount: rubriques.length,
-                    itemBuilder: (context, index) {
-                      final rubrique = rubriques[index];
-                      return Card(
-                        margin: const EdgeInsets.all(10),
-                        child: ListTile(
-                          title: Text(rubrique.name),
-                          trailing: const Icon(Icons.arrow_forward_ios),
-                          onTap: () => navigateToRubrique(rubrique),
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Erreur : ${snapshot.error}',
+                          style: attijariTheme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       );
-                    },
-                  );
-                },
+                    }
+
+                    final form = snapshot.data!;
+                    final rubriques = form.rubriques;
+
+                    if (rubriques.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'Aucune rubrique disponible.',
+                          style: attijariTheme.textTheme.bodyMedium,
+                        ),
+                      );
+                    }
+
+                    _isFormCompleted = rubriques.every(
+                      (r) =>
+                          r.id == 6 || rubriqueCompletionStatus[r.id] == true,
+                    );
+                    print(rubriqueCompletionStatus);
+                    print(
+                      "**************is walk completed check : ${_isFormCompleted}------------------",
+                    );
+
+                    return ListView.separated(
+                      itemCount: rubriques.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final rubrique = rubriques[index];
+                        return Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          shadowColor: Colors.black.withOpacity(0.1),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            title: Text(
+                              rubrique.name,
+                              style: attijariTheme.textTheme.titleMedium,
+                            ),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              color: AppColors.primary,
+                              size: 18,
+                            ),
+                            onTap: () => navigateToRubrique(rubrique),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            tileColor:
+                                (rubriqueCompletionStatus[rubrique.id!] ??
+                                        false)
+                                    ? AppColors.attijariSuccess
+                                    : Colors.white,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                  ),
-                  child: const Text(
-                    'Soumettre',
-                    style: TextStyle(color: AppColors.white),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 16,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      textStyle: attijariTheme.textTheme.titleMedium?.copyWith(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: const Text('Soumettre'),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -36,4 +36,5 @@ public class VisitQueryController {
     public List<Visit> getVisitActive() {
         return visitQueryService.getActiveVisits();
     }
+
 }

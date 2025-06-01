@@ -10,10 +10,29 @@ public class ChecklistResponseDto {
     private String ticketNumber;
     private String comment;
 
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    private boolean resolved;
+    private boolean confirmed;
+
     public ChecklistResponseDto() {}
 
     public ChecklistResponseDto(Long id, Long rubriqueId, String rubriqueName, Long itemId, String itemName, String status,
-                                String ticketNumber, String comment) {
+                                String ticketNumber, String comment, boolean resolved, boolean confirmed) {
         this.id = id;
         this.rubriqueId = rubriqueId;
         this.rubriqueName = rubriqueName;
@@ -22,6 +41,8 @@ public class ChecklistResponseDto {
         this.ticketNumber = ticketNumber;
         this.comment = comment;
         this.itemId = itemId;
+        this.resolved = resolved;
+        this.confirmed = confirmed;
     }
 
     public Long getItemId() {

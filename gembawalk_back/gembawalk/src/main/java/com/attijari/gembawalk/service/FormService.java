@@ -5,11 +5,9 @@ import com.attijari.gembawalk.dto.FormDto;
 import com.attijari.gembawalk.dto.QuestionDto;
 import com.attijari.gembawalk.dto.RubriqueDto;
 import com.attijari.gembawalk.entity.Form;
-import com.attijari.gembawalk.entity.Question;
 import com.attijari.gembawalk.repository.FormRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +21,7 @@ public class FormService {
     public FormService(FormRepository formRepository) {
         this.formRepository = formRepository;
     }
-    @Transactional
+
     public FormDto getFormWithRubriques(Long formId) {
         Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new EntityNotFoundException("Form not found: " + formId));

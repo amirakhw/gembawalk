@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-//remove the autowired , inject with constructor pour faciliter les tests unitaires
+
     @Autowired
     private AuthService authService;
 

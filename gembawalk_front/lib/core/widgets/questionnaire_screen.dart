@@ -25,15 +25,20 @@ class QuestionnaireScreen extends StatefulWidget {
 }
 
 class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
-  late Map<int, TextEditingController> _controllers; // Use int as key for question ID
+  late Map<int, TextEditingController>
+  _controllers; // Use int as key for question ID
 
   @override
   void initState() {
     super.initState();
-    print("********************init questionnaireScreen*****************************");
+    print(
+      "********************init questionnaireScreen*****************************",
+    );
     _controllers = {
       for (var q in widget.questions) // Iterate over Question objects
-        q.id: TextEditingController(text: widget.initialData?['question_${q.id}'] ?? ''), // Use question ID as key
+        q.id: TextEditingController(
+          text: widget.initialData?['question_${q.id}'] ?? '',
+        ), // Use question ID as key
     };
 
     // 👉 Auto‑save on every change:
@@ -57,7 +62,9 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   Map<String, dynamic> _collectResponses() {
     return {
-      for (var entry in _controllers.entries) 'question_${entry.key}': entry.value.text, // Use 'question_' prefix for keys
+      for (var entry in _controllers.entries)
+        'question_${entry.key}':
+            entry.value.text, // Use 'question_' prefix for keys
     };
   }
 
@@ -79,12 +86,19 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: const Color(0xFFF5F5F5),
+        // 👇 Default true, but explicit here
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: AppColors.primary,
-          title: Text(widget.title,
-              style: const TextStyle(color: AppColors.white)),
+          title: Text(
+            widget.title,
+            style: const TextStyle(color: AppColors.white),
+          ),
+          elevation: 0,
         ),
         body: Column(
           children: [
@@ -94,21 +108,45 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 itemCount: widget.questions.length,
                 itemBuilder: (ctx, i) {
                   final q = widget.questions[i];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: AppColors.primary.withOpacity(0.2),
+                      ),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(q.questionText, // Use questionText from the Question object
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
+                        Text(
+                          q.questionText,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         TextField(
-                          controller: _controllers[q.id], // Use question ID as key
+                          controller: _controllers[q.id],
                           maxLines: null,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
                             hintText: 'Votre réponse',
+                            filled: true,
+                            fillColor: AppColors.primary.withOpacity(0.05),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ],
@@ -117,39 +155,52 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _returnToMenu,
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColors.primary),
-                        foregroundColor: AppColors.primary,
-                      ),
-                      child: const Text('Retourner au Menu'),
-                    ),
-                  ),
-                  if (widget.nextScreen != null) ...[
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _goNext,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                        ),
-                        child: const Text('Suivant',
-                            style: TextStyle(color: AppColors.white)),
-                      ),
+            // ✅ SafeArea only, no manual bottom padding
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
                     ),
                   ],
-                ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _returnToMenu,
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.primary),
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: const Text('Retourner au Menu'),
+                      ),
+                    ),
+                    if (widget.nextScreen != null) ...[
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _goNext,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text(
+                            'Suivant',
+                            style: TextStyle(color: AppColors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ],
