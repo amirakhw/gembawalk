@@ -1,0 +1,31 @@
+@startuml LoadVisitForm
+actor "Visiteur" as V
+participant "Frontend Flutter" as FE
+participant "VisitController" as VC
+participant "VisitService" as VS
+participant "VisitRepository" as VR
+participant "Database" as DB
+
+' 4. Request form
+V -> FE : clique "Commencer Visite"
+FE -> VC : GET /forms/{formId}
+activate VC
+VC -> VS : getForm(formId)
+activate VS
+VS -> VR : fetchFormWithRubriques(formId)
+activate VR
+VR -> DB : SELECT rubriques/items/questions
+activate DB
+DB --> VR : form + rubriques + items
+deactivate DB
+VR --> VS : Form entity
+deactivate VR
+VS --> VC : FormDto
+deactivate VS
+VC --> FE : FormDto (rubriques, items, questions)
+deactivate VC
+
+' 5. UI displays rubriques
+FE --> V : Affiche le menu des rubriques
+@enduml
+

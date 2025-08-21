@@ -1,0 +1,43 @@
+@startuml TechnicianResolveAnomaly
+actor "Technicien" as Tech
+participant "Application Flutter" as App
+participant "Serveur Backend" as BE
+participant "Base de Données" as DB
+
+' 1. Technicien affiche la liste des plans d’action avec anomalies ouvertes
+Tech -> App : Ouvre la liste des plans d’action
+
+' 2. App demande les plans d’action et leurs items non résolus au backend
+App -> BE : Requête plans d’action + items (status item = EN_COURS)
+
+' 3. Backend récupère les plans d’action et items non résolus
+BE -> DB : Récupère plans d’action + items avec status EN_COURS
+
+' 4. BDD retourne les données
+DB --> BE : Plans d’action + items
+
+' 5. Backend retourne les données à l’application
+BE --> App : Plans d’action + items
+
+' 6. Technicien sélectionne un item à résoudre
+Tech -> App : Sélectionne un item
+
+' 7. Technicien confirme résolution de l’anomalie (item)
+Tech -> App : Confirme résolution (item)
+
+' 8. App envoie la mise à jour au backend (statut item = RESOLU)
+App -> BE : Met à jour statut item (EN_COURS -> RESOLU)
+
+' 9. Backend met à jour la BDD
+BE -> DB : Mise à jour statut item
+
+' 10. BDD confirme mise à jour
+DB --> BE : Confirmation
+
+' 11. Backend confirme à l’application
+BE --> App : Succès mise à jour statut item
+
+' 12. Statut de l’item mis à jour en RESOLU
+App -> Tech : Statut de l’anomalie passé à RESOLU
+
+@enduml

@@ -31,4 +31,8 @@ public class AgencyService {
                 .map(agency -> new AgencyDto(agency.getId(), agency.getName(), agency.getGroup().getId()))
                 .collect(Collectors.toList());
     }
+
+    public List<Agency> getAllAgencies(){
+        return agencyRepository.findAll();
+    }
 }

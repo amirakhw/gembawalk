@@ -1,0 +1,36 @@
+@startuml PrepareVisit
+actor "Visiteur" as V
+participant "Frontend Flutter" as FE
+participant "VisitController" as VC
+participant "VisitService" as VS
+participant "VisitRepository" as VR
+participant "Database" as DB
+
+' 1. Tap Nouvelle Visite
+V -> FE : tap "Nouvelle Visite"
+
+' 2. Get region, group, agence
+FE -> VC : GET /agences-infos
+activate VC
+VC -> VS : getAgencesInfos()
+activate VS
+VS -> VR : fetchRegionGroupAgence()
+activate VR
+VR -> DB : SELECT * FROM region/group/agence
+activate DB
+DB --> VR : lists ( region, group , agence)
+deactivate DB
+VR --> VS : lists ( region, group , agence)
+deactivate VR
+VS --> VC : lists ( region, group , agence)
+deactivate VS
+VC --> FE : lists ( region, group , agence)
+deactivate VC
+
+' 3. User fills visit details locally (no server interaction)
+note right of FE
+L'utilisateur remplit les
+détails de la visite localement
+end note
+@enduml
+

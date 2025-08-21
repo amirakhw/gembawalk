@@ -33,6 +33,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         String token = null;
         String username = null;
+        String path = request.getRequestURI();
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return; // Ignore le filtre JWT pour OPTIONS
+        }
+
+        if (path.startsWith("/api/forms/") || path.equals("/error")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (header != null && header.startsWith("Bearer ")) {
             token = header.substring(7);

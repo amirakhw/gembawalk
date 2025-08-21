@@ -7,6 +7,7 @@ import com.attijari.gembawalk.entity.Role;
 import com.attijari.gembawalk.repository.UserRepository;
 import com.attijari.gembawalk.repository.RoleRepository;
 import com.attijari.gembawalk.config.JwtUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,20 +18,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    // injection par constructeur au lieu de injection par attribut
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthService(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * Authentifie l'utilisateur et génère un token JWT
@@ -42,7 +44,6 @@ public class AuthService {
         String token = jwtUtil.generateToken(authentication);
         return new LoginResponse(token);
     }
-
     public User register(String email, String password, String roleName) {
         if(userRepository.findByEmail(email).isPresent()){
             throw new RuntimeException("User already exists");
@@ -64,7 +65,6 @@ public class AuthService {
 
         return userRepository.save(user);
     }
-
     public User register(String email, String password) {
         return register(email, password, null);
     }

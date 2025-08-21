@@ -1,0 +1,58 @@
+@startuml VisitorFollowPlanActions
+actor "Visiteur" as Visitor
+participant "Application Flutter" as App
+participant "Serveur Backend" as BE
+participant "Base de Données" as DB
+
+' 1. Visiteur ouvre l’écran de suivi des plans d’action
+Visitor -> App : Ouvre la liste des plans d’action suivis
+
+' 2. App demande la liste des plans d’action pour l’agence/visite
+App -> BE : Requête plans d’action avec leur statut et anomalies
+
+' 3. Backend récupère plans d’action et anomalies
+BE -> DB : Récupère plans d’action + items liés
+
+' 4. BDD retourne les données
+DB --> BE : Plans d’action + items avec leur statut
+
+' 5. Backend renvoie les données à l’application
+BE --> App : Plans d’action + items
+
+' 6. Visiteur consulte détails d’un plan d’action
+Visitor -> App : Sélectionne un plan d’action
+
+' 7. Visiteur confirme la correction d’une anomalie (item)
+Visitor -> App : Confirme anomalie corrigée (item)
+
+' 8. App envoie confirmation au backend
+App -> BE : Confirme correction item
+
+' 9. Backend met à jour la BDD
+BE -> DB : Mise à jour statut item (par exemple à CONFIRME_PAR_VISITEUR)
+
+' 10. BDD confirme mise à jour
+DB --> BE : Confirmation
+
+' 11. Backend confirme à l’application
+BE --> App : Succès mise à jour
+
+' 12. Visiteur clôture un plan d’action (après vérification)
+Visitor -> App : Demande clôture plan d’action
+
+' 13. App demande clôture au backend
+App -> BE : Clôture plan d’action (changement statut)
+
+' 14. Backend met à jour la BDD
+BE -> DB : Mise à jour statut plan d’action (ex: CLOTURE)
+
+' 15. BDD confirme mise à jour
+DB --> BE : Confirmation
+
+' 16. Backend confirme à l’application
+BE --> App : Succès clôture plan d’action
+
+' 17. Application confirme la clôture au visiteur
+App -> Visitor : Plan d’action clôturé avec succès
+
+@enduml

@@ -1,0 +1,78 @@
+@startuml
+' === General Settings ===
+skinparam backgroundColor #F8F8F8
+skinparam style strictuml
+skinparam actorStyle awesome
+
+skinparam usecase {
+  BackgroundColor #008CBA
+  BorderColor #005F73
+  FontColor white
+  BorderThickness 2
+  RoundCorner 20
+  FontSize 14
+  StereotypeFontColor #444444
+}
+
+skinparam actor {
+  FontSize 13
+  FontColor #333333
+}
+
+skinparam rectangle {
+  BorderColor #777777
+  RoundCorner 10
+}
+
+skinparam arrow {
+  Color #555555
+  Thickness 1.5
+}
+
+skinparam stereotypeCBackgroundColor #EEEEEE
+
+title <size:20><b>Attijari Gemba Walk – Use Case Diagram</b></size>
+
+' === Actors ===
+actor "Visiteur" as Visiteur
+actor "Technicien" as Technicien
+actor "Responsable" as Responsable
+
+' === System Boundary ===
+rectangle "Attijari Gemba Walk" {
+  (Choisir les détails de la visite) as U1
+  (Démarrer une nouvelle visite) as U2
+  (Remplir la checklist) as U3
+  (Ajouter une photo) as U4
+  (Ajouter un commentaire) as U5
+  (Suivre les plans d'actions) as U6
+  (Suivre ses plans d'actions) as U7
+  (Confirmer la résolution des anomalies) as U8
+  (Résoudre les anomalies) as U9
+  (Consulter le dashboard) as U10
+
+  ' === Logical Flow (Vertical) ===
+  U1 -down-> U2
+  U2 -down-> U3
+  U3 -down-> U7
+  U7 -down-> U8
+
+  ' === Use Case Extensions and Includes ===
+  U3 --> U4 : <<extend>>
+  U3 --> U5 : <<extend>>
+  U3 --> U6 : <<extend>>
+  U8 --> U9 : <<include>>
+}
+
+' === Associations ===
+Visiteur --> U1
+Visiteur --> U2
+Visiteur --> U3
+Visiteur --> U7
+Visiteur --> U8
+
+Technicien --> U6
+Technicien --> U9
+Responsable --> U10
+
+@enduml

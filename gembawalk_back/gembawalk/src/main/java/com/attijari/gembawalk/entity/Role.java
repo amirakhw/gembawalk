@@ -1,6 +1,8 @@
 package com.attijari.gembawalk.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "roles")
@@ -10,13 +12,20 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private String name; // Example: VISITOR, TECHNICIAN, DASHBOARD_VIEWER
+    @NotNull
+    @Size(min = 3, max = 50)
+    private RoleName name;
 
     // Constructors
     public Role() {}
 
-    public Role(Long id, String name) {
+    public Role(RoleName name) {
+        this.name = name;
+    }
+
+    public Role(Long id, RoleName name) {
         this.id = id;
         this.name = name;
     }
@@ -30,11 +39,18 @@ public class Role {
         this.id = id;
     }
 
-    public String getName() {
+    public RoleName getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(RoleName name) {
         this.name = name;
+    }
+
+    // Define the RoleName enum within the Role entity
+    public enum RoleName {
+        VISITOR,
+        TECHNICIAN,
+        DASHBOARD_VIEWER
     }
 }
