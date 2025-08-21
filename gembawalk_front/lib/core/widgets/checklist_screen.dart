@@ -30,8 +30,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
   late Map<int, TextEditingController> ticketControllers;
   late Map<int, TextEditingController> commentControllers;
   late Map<int, List<XFile>> images;
-  final _picker = ImagePicker();
-
+  //File? _selectedImage;
   @override
   void initState() {
     super.initState();
@@ -49,9 +48,35 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
       commentControllers[item.id] = TextEditingController(
         text: widget.initialData?['comments']?['item_${item.id}'] ?? '',
       );
-      images[item.id] = [];
+      images[item.id] = widget.initialData?['images']?['item_${item.id}'] ?? [];
+    }
+
+    //getLostData();
+  }
+
+  /*void _handleLostFiles(List<XFile> files) {
+    setState(() {
+      _imageFile = files.first; // ou plusieurs selon ton besoin
+    });
+  }
+
+  void _handleError(Exception? e) {
+    debugPrint("Erreur lors de la récupération de l’image : $e");
+  }
+
+  Future<void> getLostData() async {
+    final ImagePicker picker =
+        ImagePicker(); //On instancie l’outil qui va gérer les images
+    final LostDataResponse response = await picker.retrieveLostData();
+    if (response.isEmpty) return;
+
+    if (response.files != null) {
+      _handleLostFiles(response.files!);
+    } else {
+      _handleError(response.exception);
     }
   }
+*/
 
   @override
   void dispose() {
@@ -78,7 +103,8 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
     },
     'images': {
       for (var entry in images.entries)
-        'item_${entry.key}': entry.value.map((e) => e.path).toList(),
+        //'item_${entry.key}': entry.value.map((e) => e.path).toList(),
+        'item_${entry.key}': entry.value.toList(),
     },
   };
 
@@ -98,6 +124,19 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
         context,
       ).push(MaterialPageRoute(builder: (_) => widget.nextScreen!));
     }
+  }
+
+  Future<void> _pickImageFromCamera(int itemId) async {
+    final returnedImage = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    );
+    if (returnedImage == null) return;
+
+    setState(() {
+      images[itemId]?.add(returnedImage);
+    });
+
+    _autoSave();
   }
 
   @override
@@ -138,6 +177,10 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                     setState(() {});
                     _autoSave();
                   },
+                  onCameraPressed: () {
+                    _pickImageFromCamera(item.id);
+                  },
+                  images: images[item.id],
                 );
               },
             ),

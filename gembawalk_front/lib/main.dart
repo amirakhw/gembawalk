@@ -9,13 +9,13 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {  
+void main() {
   dotenv.load(fileName: ".env");
   runApp(
     ChangeNotifierProvider(
       create: (context) => LocalDB(),
       child: const MyApp(),
-      ),
+    ),
   );
 }
 
@@ -28,13 +28,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Gemba Walk',
       theme: attijariTheme,
-      // 1️⃣ Use named routes for both login and menu
+      // Use named routes for both login and menu
       initialRoute: '/',
       routes: {
         // When the app starts, show LoginScreen
         '/': (ctx) => const LoginScreen(),
-        // Define '/menu' to point at your GembaWalkMenuScreen
-        '/menu': (ctx) => const GembaWalkMenuScreen(
+        // Define '/menu' to point at my GembaWalkMenuScreen
+        '/menu':
+            (ctx) => const GembaWalkMenuScreen(
               formId: 1,
               regionId: 1,
               groupId: 1,
@@ -44,9 +45,9 @@ class MyApp extends StatelessWidget {
               // Removed: agenceName: 'Agence',
             ),
       },
-      // You can still catch other pushes with onGenerateRoute if needed
+      // i can still catch other pushes with onGenerateRoute if needed
       onGenerateRoute: (settings) {
-        // fallback logic here…
+        // fallback logic here
         return null;
       },
     );

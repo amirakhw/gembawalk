@@ -21,17 +21,15 @@ class AgentDeSecuriteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChecklistScreen(
       rubrique: rubrique,
-      title: rubrique.name, // Use the rubrique's name
-      //items: rubrique.checklistItems.map((item) => item.name).toList(), // Use the rubrique's items
+      title: rubrique.name,
       initialData: initialData,
       onSaveData: (data) => Navigator.pop(context, data),
       nextScreen: FemmeDeMenageScreen(
-        initialData: const {}, // Adjust if you have initial data for this screen
+        initialData: const {},
         onSaveData: (data) {
-          // Handle saved data from FemmeDeMenageScreen
           print('Data from Femme de Ménage: $data');
         },
-        rubrique: rubrique, // Pass the rubrique here
+        rubrique: rubrique,
       ),
     );
   }

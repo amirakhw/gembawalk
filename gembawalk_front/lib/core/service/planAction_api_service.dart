@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gembawalk_front/core/models/checklist_item_reponse.dart';
 import 'package:gembawalk_front/core/models/visit.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:http_parser/http_parser.dart';
 
 //(json['rubriques'] as List).map((r) => Rubrique.fromJson(r)).toList()
 
@@ -50,6 +53,39 @@ class PlanactionApiService {
     }
   }
 
+  //upload image method
+  Future<void> uploadImageToServer(XFile imageFile) async {
+    final url = Uri.parse(
+      'http://${dotenv.get('LOCALIP')}:8080/api/visits/2/images',
+    );
+
+    print("* * * * * * * * *  WITH FILE * * * * * * * * * ");
+    print(imageFile);
+
+    // Convertir XFile en File
+    final file = File(imageFile.path);
+
+    final request = http.MultipartRequest('POST', url);
+
+    // Ajouter l'image au corps de la requête
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file', //  Doit être exactement "file" car @RequestParam("file")
+        file.path,
+        contentType: MediaType('image', 'jpg'),
+      ),
+    );
+
+    // Envoyer la requête
+    final response = await request.send();
+
+    if (response.statusCode == 201) {
+      print('Image envoyée avec succès');
+    } else {
+      print(' Erreur lors de l’envoi : ${response.statusCode}');
+    }
+  }
+
   Future<void> postResolveStatus(int responseId, bool resolved) async {
     final url = Uri.parse(
       'http://${dotenv.get('LOCALIP')}:8080/api/checklist/resolve',
@@ -92,46 +128,36 @@ class PlanactionApiService {
         body: jsonEncode(body),
       );
 
-      // 4. If the backend replies with success (200 or 204), it prints success
       if (response.statusCode == 200) {
         print(' Response confirmed');
-      }
-      // 5. If the backend fails, it prints an error message
-      else {
+      } else {
         print(' Failed to confirm: ${response.statusCode}');
         print('Body: ${response.body}');
       }
     } catch (e) {
-      // 5. (continued) If a connection error or unexpected error occurs
       print(' Error while confirming response: $e');
     }
   }
 
   Future<void> terminate(int visitId) async {
-    // 1. Builds the backend URL: http://<your_local_ip>:8080/api/checklist/confirm
     final url = Uri.parse(
       'http://${dotenv.get('LOCALIP')}:8080/api/visits/terminate/${visitId}',
     );
 
     try {
-      // 3. Sends a POST request to the backend with this body
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({}),
       );
 
-      // 4. If the backend replies with success (200 or 204), it prints success
       if (response.statusCode == 200) {
         print(' Response confirmed');
-      }
-      // 5. If the backend fails, it prints an error message
-      else {
+      } else {
         print(' Failed to confirm: ${response.statusCode}');
         print('Body: ${response.body}');
       }
     } catch (e) {
-      // 5. (continued) If a connection error or unexpected error occurs
       print(' Error while confirming response: $e');
     }
   }

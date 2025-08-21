@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:gembawalk_front/config/colors.dart'; // Make sure AppColors is used
+import 'package:gembawalk_front/config/colors.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChecklistItemWidget extends StatelessWidget {
   final String itemName;
@@ -10,6 +12,9 @@ class ChecklistItemWidget extends StatelessWidget {
   final Function(String) onTicketChanged;
   final Function(String) onCommentChanged;
 
+  final VoidCallback onCameraPressed;
+  final List<XFile>? images;
+
   const ChecklistItemWidget({
     super.key,
     required this.itemName,
@@ -19,10 +24,13 @@ class ChecklistItemWidget extends StatelessWidget {
     required this.onConformityChanged,
     required this.onTicketChanged,
     required this.onCommentChanged,
+    required this.onCameraPressed, // <-- ajouté ici
+    required this.images,
   });
 
   @override
   Widget build(BuildContext context) {
+    final List<XFile> _imageList = images ?? [];
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -41,13 +49,32 @@ class ChecklistItemWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            itemName,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
+          // TITRE + BOUTON CAMERA
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  itemName,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary.withOpacity(0.1),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  color: AppColors.primary,
+                  tooltip: 'Prendre une photo',
+                  onPressed: onCameraPressed,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Row(
@@ -108,6 +135,32 @@ class ChecklistItemWidget extends StatelessWidget {
               ),
             ),
             maxLines: 2,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 60,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  //itemCount: imagePathsPerItem[index].length,
+                  itemCount: _imageList.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, imgIndex) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.file(
+                        //File(imagePathsPerItem[index][imgIndex]),
+                        File(_imageList[imgIndex].path),
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

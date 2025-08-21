@@ -37,8 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final Uri uri = Uri.parse(
       'http://' + dotenv.get('LOCALIP') + ':8080/api/auth/login',
     );
-    //final Uri uri = Uri.parse('http://192.168.1.25:8080/api/auth/login');
-    //print("***********************************************$uri");
 
     try {
       final response = await http.post(
@@ -108,81 +106,12 @@ class _LoginScreenState extends State<LoginScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /*  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: attijariTheme.scaffoldBackgroundColor,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const Image(
-                  height: 80,
-                  image: AssetImage("assets/images/attijariLogo.png"),
-                ),
-                const SizedBox(height: 48.0),
-                Text(
-                  'Bienvenue',
-                  textAlign: TextAlign.center,
-                  style: attijariTheme.textTheme.titleLarge,
-                ),
-                const SizedBox(height: 24.0),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                  ),
-                  style: attijariTheme.textTheme.bodyMedium,
-                  controller: _usernameController,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  obscureText: _isObscure,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
-                    ),
-                  ),
-                  style: attijariTheme.textTheme.bodyMedium,
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 32.0),
-                ElevatedButton(
-                  onPressed: _login,
-                  child: const Text('Se connecter'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  } */
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: attijariTheme.scaffoldBackgroundColor,
       body: Stack(
         children: [
-          // 🎨 Background dégradé subtil
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -192,7 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // 📦 Contenu principal avec Card stylée
           Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
@@ -210,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        // 🦸 Hero animation logo
                         Hero(
                           tag: 'attijariLogo',
                           child: const Image(
@@ -263,7 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _passwordController,
                         ),
                         const SizedBox(height: 32.0),
-                        // 🔘 Bouton amélioré
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,

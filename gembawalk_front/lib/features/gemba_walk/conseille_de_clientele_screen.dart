@@ -22,16 +22,14 @@ class ConseilleDeClienteleScreen extends StatelessWidget {
     return ChecklistScreen(
       rubrique: rubrique,
       title: rubrique.name,
-      //items: rubrique.checklistItems.map((item) => item.name).toList(),
       initialData: initialData,
       onSaveData: (data) => Navigator.pop(context, data),
       nextScreen: GestionnaireClienteleScreen(
-        initialData: const {}, // Adjust if you have initial data for this screen
+        initialData: const {},
         onSaveData: (data) {
-          // Handle saved data from GestionnaireClienteleScreen
           print('Data from Gestionnaire de Clientèle Principal: $data');
         },
-        rubrique: rubrique, // ✅ Pass the rubrique here
+        rubrique: rubrique,
       ),
     );
   }

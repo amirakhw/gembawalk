@@ -254,9 +254,9 @@ class _PlanDActionScreenState extends State<PlanDActionScreen> {
                               await showConfirmationDialog(
                                 context,
                                 content:
-                                    'kamel confirmi el items 9bal clôturer ce plan d\'action',
-                                confirmText: "behi",
-                                cancelText: "sama7ni",
+                                    'Vous devez confirmer la résolution de tous les items avant de clôturer',
+                                confirmText: "ignorer",
+                                cancelText: "annuler",
                               );
                             }(),
                       },

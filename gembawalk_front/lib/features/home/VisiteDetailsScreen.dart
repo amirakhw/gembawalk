@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gembawalk_front/config/theme.dart';
-import 'package:gembawalk_front/core/widgets/checklist_item_widget.dart'; // Import ChecklistItemWidget
+import 'package:gembawalk_front/core/widgets/checklist_item_widget.dart';
 import 'package:image_picker/image_picker.dart'; // Import XFile class
 
 class VisiteDetailsScreen extends StatelessWidget {
@@ -50,33 +50,29 @@ class VisiteDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Display checklist items using ChecklistItemWidget
-                    ...(rubrique['conformity'] as Map<String, String>).keys.map((
-                      key,
-                    ) {
-                      // Mock controllers,  images.  Real data is already in rubrique.
-                      final ticketController = TextEditingController(
-                        text: rubrique['ticketNumbers']?[key] ?? '',
-                      );
-                      final commentController = TextEditingController(
-                        text: rubrique['comments']?[key] ?? '',
-                      );
-                      final List<XFile> mockImages = [];
+                    ...(rubrique['conformity'] as Map<String, String>).keys.map(
+                      (key) {
+                        final ticketController = TextEditingController(
+                          text: rubrique['ticketNumbers']?[key] ?? '',
+                        );
+                        final commentController = TextEditingController(
+                          text: rubrique['comments']?[key] ?? '',
+                        );
+                        final List<XFile> mockImages = [];
 
-                      return ChecklistItemWidget(
-                        itemName: key,
-                        conformity: rubrique['conformity'][key],
-                        ticketController: ticketController,
-                        commentController: commentController,
-                        //images: mockImages, //  Use an empty list.
-                        onConformityChanged:
-                            (v) {}, //  These callbacks do nothing for display.
-                        onTicketChanged: (v) {},
-                        onCommentChanged: (v) {},
-                        //onAddImage: () {},
-                        //onRemoveImage: (i) {},
-                      );
-                    }),
+                        return ChecklistItemWidget(
+                          itemName: key,
+                          conformity: rubrique['conformity'][key],
+                          ticketController: ticketController,
+                          commentController: commentController,
+                          onConformityChanged: (v) {},
+                          onTicketChanged: (v) {},
+                          onCommentChanged: (v) {},
+                          //onAddImage: () {},
+                          //onRemoveImage: (i) {},
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),

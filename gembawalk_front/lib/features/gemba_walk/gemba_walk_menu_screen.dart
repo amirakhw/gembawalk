@@ -19,7 +19,6 @@ class GembaWalkMenuScreen extends StatefulWidget {
   final int groupId;
   final int agenceId;
 
-  //is this used anywhere? --wael
   final Map<String, dynamic>? previousData;
 
   const GembaWalkMenuScreen({
@@ -68,7 +67,8 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
   }
 
   void _submitForm() async {
-    if (_isFormCompleted) {
+    if (true) {
+      //_isFormCompleted) {
       final confirmPopUP = await showConfirmationDialog(
         context,
         content: 'Êtes-vous sûr de vouloir clôturer ce plan d\'action ?',
@@ -86,9 +86,9 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
     } else {
       await showConfirmationDialog(
         context,
-        content: 'kamel confirmi el items 9bal clôturer ce plan d\'action',
-        confirmText: "behi",
-        cancelText: "sama7ni",
+        content: 'Vous devez remplir tous les items de toutes les rubriques',
+        confirmText: "ignorer",
+        cancelText: "annuler",
       );
     }
   }
@@ -115,7 +115,6 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
           initialData: allData[rubrique.id],
           onSaveData: onSave,
           title: rubrique.name,
-          //items: rubrique.checklistItems.map((item) => item.name).toList(), // Extract names from ChecklistItems
         );
         break;
       case 'QUESTIONS':
@@ -123,10 +122,7 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
           updateRubriqueData(
             newData,
             rubrique.id!,
-            _areAllQuestionsAnswered(
-              newData,
-              rubrique.questions,
-            ), // Use questions
+            _areAllQuestionsAnswered(newData, rubrique.questions),
           );
         };
         nextScreen = QuestionnaireScreen(
@@ -145,7 +141,6 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => nextScreen));
   }
 
-  // Placeholder for checklist completion logic
   bool _isChecklistCompleted(
     Map<String, dynamic> responses,
     List<ChecklistItem> items,
@@ -162,10 +157,9 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
         return false;
       }
     }
-    return true; // Replace with actual logic
+    return true;
   }
 
-  // Placeholder for questions answered logic
   bool _areAllQuestionsAnswered(
     Map<String, dynamic> responses,
     List<Question> questions,
@@ -253,7 +247,8 @@ class _GembaWalkMenuScreenState extends State<GembaWalkMenuScreen> {
 
                     _isFormCompleted = rubriques.every(
                       (r) =>
-                          r.id == 6 || rubriqueCompletionStatus[r.id] == true,
+                          //r.id == 6 || rubriqueCompletionStatus[r.id] == true,
+                          r.id >= 3 || rubriqueCompletionStatus[r.id] == true,
                     );
                     print(rubriqueCompletionStatus);
                     print(

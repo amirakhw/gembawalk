@@ -109,7 +109,6 @@ class _TechPlanDActionScreenState extends State<TechPlanDActionScreen> {
               ),
               const Divider(height: 20, thickness: 1),
 
-              /// MAIN LIST - Expanded to avoid overflow
               Expanded(
                 child: FutureBuilder<List<ChecklistItemReponseModel>>(
                   future: actionItems,
@@ -204,28 +203,6 @@ class _TechPlanDActionScreenState extends State<TechPlanDActionScreen> {
                   },
                 ),
               ),
-
-              /// ✅ FIXED BUTTON (always visible)
-              //const SizedBox(height: 20),
-              /*               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    print('Clôturer ce plan d\'action');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.attijariError,
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  child: const Text(
-                    'Plan d\'action terminé',
-                    style: TextStyle(color: attijariWhite, fontSize: 16.0),
-                  ),
-                ),
-              ), */
             ],
           ),
         ),

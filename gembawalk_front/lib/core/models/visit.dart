@@ -45,7 +45,7 @@ class Visit {
               'status': item.status,
               'ticketNumber': item.ticket_number,
               'comment': item.comment,
-              'photoUrl': 0, // Update if you add photo url support
+              'photoUrl': 0,
             });
           }
         }

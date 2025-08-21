@@ -21,16 +21,15 @@ class QualiteRubriqueScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuestionnaireScreen(
       title: rubrique.name,
-      questions: rubrique.questions, // ✅ Use the list of Question objects from the rubrique
+      questions: rubrique.questions,
       initialData: initialData,
       onSaveData: onSaveData,
       nextScreen: ConseilleDeClienteleScreen(
-        initialData: null, // or pass the saved data if you track it
+        initialData: null,
         onSaveData: (data) {
-          // this onSaveData should update your menu’s state for the next rubrique
           onSaveData(data);
         },
-        rubrique: rubrique, // ✅ Pass the rubrique
+        rubrique: rubrique,
       ),
     );
   }

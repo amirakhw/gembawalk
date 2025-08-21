@@ -178,27 +178,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
-/* List<Widget> _buildSummaryCards() {
-    return [
-      SummaryCard(
-        title: 'Total des visites',
-        value: '15',
-        color: AppColors.primary,
-      ),
-      SummaryCard(
-        title: 'Visites en cours',
-        value: '3',
-        color: AppColors.secondary,
-      ),
-      SummaryCard(
-        title: 'Visites terminées',
-        value: '10',
-        color: AppColors.attijariSuccess,
-      ),
-    ];
-  }
-} */
 
+//Displays a greeting with the user's name
 class _Header extends StatelessWidget {
   final String userName;
   final String userRole;
@@ -229,6 +210,7 @@ class _Header extends StatelessWidget {
   }
 }
 
+//A reusable card showing one statistic
 class SummaryCard extends StatelessWidget {
   final String title;
   final String value;
@@ -277,6 +259,7 @@ class SummaryCard extends StatelessWidget {
   }
 }
 
+//Displays a scrollable list of recent visits
 class _RecentVisitsList extends StatelessWidget {
   final List<Map<String, dynamic>> recentVisits;
 
@@ -320,7 +303,7 @@ class _RecentVisitsList extends StatelessWidget {
           ),
           trailing: const Icon(Icons.chevron_right, color: AppColors.secondary),
           onTap: () {
-            // TODO: Ajouter la navigation vers le détail de la visite si besoin
+            // here la navigation vers le détail de la visite
           },
         );
       },

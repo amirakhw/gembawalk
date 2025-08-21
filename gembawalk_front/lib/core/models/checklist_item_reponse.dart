@@ -6,7 +6,7 @@ class ChecklistItemReponseModel {
   final String rubrique_name;
   String? comment;
   String? ticket_number;
-  String? status; //CONFORM & NON CONFORM
+  String? status; //CONFORM & NON_CONFORM
   bool? confirmed;
   bool? resolved;
 

@@ -87,10 +87,7 @@ class VisitorHomeScreen extends StatelessWidget {
                     ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children:
-                          children
-                              .whereType<ElevatedButton>()
-                              .toList(), // ignore SizedBox for row layout
+                      children: children.whereType<ElevatedButton>().toList(),
                     )
                     : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
