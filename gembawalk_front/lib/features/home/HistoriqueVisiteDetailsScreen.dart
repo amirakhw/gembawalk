@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:gembawalk_front/config/colors.dart';
 import 'package:gembawalk_front/core/models/checklist_item_reponse.dart';
 import '../../core/service/planAction_api_service.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
 
 class HistoriqueVisiteDetailsScreen extends StatefulWidget {
   final int visitId;
@@ -35,7 +41,15 @@ class _HistoriqueVisiteDetailsScreenState
         ),
         backgroundColor: AppColors.primary,
         iconTheme: const IconThemeData(color: AppColors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: 'Exporter en PDF',
+            onPressed: () => _downloadPdf(context),
+          ),
+        ],
       ),
+
       backgroundColor: AppColors.background,
       body: FutureBuilder<List<ChecklistItemReponseModel>>(
         future: HistoryItems,
@@ -159,6 +173,75 @@ class _HistoriqueVisiteDetailsScreenState
         },
       ),
     );
+  }
+
+  /*void _downloadPdf() async {
+    final url =
+        'http://${dotenv.get('LOCALIP')}:8080/api/visits/${widget.visitId}/pdf';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        // Convert bytes to PDF file and save locally
+        final bytes = response.bodyBytes;
+        final dir = await getApplicationDocumentsDirectory();
+        final file = File('${dir.path}/visit_${widget.visitId}.pdf');
+        await file.writeAsBytes(bytes);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PDF téléchargé avec succès !')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors du téléchargement du PDF.'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+    }
+  }
+*/
+
+  void _downloadPdf(BuildContext context) async {
+    final url =
+        'http://${dotenv.get('LOCALIP')}:8080/api/visits/${widget.visitId}/pdf';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+
+        // Get app's documents directory
+        final dir = await getApplicationDocumentsDirectory();
+        final filePath = '${dir.path}/visit_${widget.visitId}.pdf';
+        final file = File(filePath);
+
+        await file.writeAsBytes(bytes);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PDF téléchargé avec succès !')),
+        );
+
+        // Open PDF automatically
+        await OpenFilex.open(filePath);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors du téléchargement du PDF.'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+    }
   }
 
   Widget _statusChip(String? status) {
